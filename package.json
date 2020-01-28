@@ -8,7 +8,6 @@
     "url": "https://github.com/risenforces/risen.dev/issues"
   },
   "dependencies": {
-    "full-icu": "^1.3.0",
     "gatsby": "^2.19.7",
     "gatsby-image": "^2.2.39",
     "gatsby-plugin-feed": "^2.3.26",
