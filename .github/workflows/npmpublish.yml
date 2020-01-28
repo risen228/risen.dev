@@ -17,5 +17,5 @@ jobs:
       - run: npm run build
       - run: npm run deploy
         env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GH_TOKEN: ${{secrets.GH_TOKEN}}
           REPO: risenforces/risen.dev
