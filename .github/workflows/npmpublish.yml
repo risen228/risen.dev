@@ -1,21 +1,17 @@
-name: Deploy
-
-on:
-  push:
-    branches:
-      - master
-
+name: Build and Deploy
+on: [push]
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 12
-      - run: npm ci
-      - run: npm run build
-      - run: npm run deploy
-        env:
-          GH_TOKEN: ${{secrets.GH_TOKEN}}
-          REPO: risenforces/risen.dev
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        persist-credentials: false
+
+    - name: Build and Deploy
+      uses: JamesIves/github-pages-deploy-action@releases/v3
+      with:
+        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        BRANCH: gh-pages
+        FOLDER: public
