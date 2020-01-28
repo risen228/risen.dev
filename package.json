@@ -61,6 +61,6 @@
     "serve": "gatsby serve",
     "clean": "gatsby clean",
     "lint": "eslint src/**/*.js --quiet --fix",
-    "deploy": "gh-pages -d public -r https://$GITHUB_TOKEN@github.com/$REPO.git"
+    "deploy": "gh-pages -d public -r https://$GH_TOKEN@github.com/$REPO.git"
   }
 }
