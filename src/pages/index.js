@@ -5,7 +5,7 @@ import { Bio } from '../components/bio'
 import { Layout } from '../components/layout'
 import { Seo } from '../components/seo'
 import { rhythm } from '../utils/typography'
-import { fullDate } from '../utils/date'
+import { fullDate } from '../utils/dates'
 
 const BlogIndex = ({ data, location }) => {
   const {
@@ -31,7 +31,9 @@ const BlogIndex = ({ data, location }) => {
             <header>
               <h3
                 style={{
-                  marginBottom: rhythm(1 / 4),
+                  fontFamily: 'Montserrat, sans-serif',
+                  fontWeight: 700,
+                  marginBottom: rhythm(0.25),
                 }}
               >
                 <Link style={{ boxShadow: `none` }} to={slug}>

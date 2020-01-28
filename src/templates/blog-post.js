@@ -1,13 +1,16 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Link, graphql } from 'gatsby'
 
 import { Bio } from '../components/bio'
 import { Layout } from '../components/layout'
 import { Seo } from '../components/seo'
 import { rhythm, scale } from '../utils/typography'
-import { fullDate } from '../utils/date'
+import { fullDate } from '../utils/dates'
+import { loadFontsForPost } from '../fonts/loaders'
 
 const BlogPostTemplate = ({ data, pageContext, location }) => {
+  useEffect(loadFontsForPost, [])
+
   const {
     site: {
       siteMetadata: { title: siteTitle },
