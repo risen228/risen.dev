@@ -1,0 +1,15 @@
+{
+  "extends": [
+    "kit/base",
+    "kit/react",
+    "kit/node",
+    "kit/prettier"
+  ],
+  "parser": "babel-eslint",
+  "globals": {
+    "__PATH_PREFIX__": true
+  },
+  "rules": {
+    "react/jsx-pascal-case": "off"
+  }
+}
