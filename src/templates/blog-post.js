@@ -38,12 +38,29 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
           </p>
         </header>
         <section dangerouslySetInnerHTML={{ __html: post.html }} />
-        <hr
+        <footer
           style={{
-            marginBottom: rhythm(1),
+            padding: rhythm(1) + ' 0',
           }}
-        />
-        <footer>
+        >
+          <h3
+            style={{
+              fontFamily: 'Montserrat, sans-serif',
+              marginTop: 0,
+              marginBottom: rhythm(1),
+            }}
+          >
+            <Link
+              style={{
+                boxShadow: 'none',
+                textDecoration: 'none',
+                color: 'var(--textLink)',
+              }}
+              to="/"
+            >
+              {siteTitle}
+            </Link>
+          </h3>
           <Bio />
         </footer>
       </article>

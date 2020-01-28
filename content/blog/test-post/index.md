@@ -15,3 +15,5 @@ const Component = () => {
   </div>
 }
 ```
+
+Some other text.
