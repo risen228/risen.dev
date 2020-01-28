@@ -10,7 +10,9 @@ jobs:
         persist-credentials: false
         
     - name: Build
-      run: npm run build
+      run: |
+        npm ci
+        npm run build
 
     - name: Deploy
       uses: JamesIves/github-pages-deploy-action@releases/v3
