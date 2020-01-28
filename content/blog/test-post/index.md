@@ -1,14 +1,15 @@
 ---
-title: Test Post
+title: Тестовый пост
 date: "2020-01-28T13:26:13.328Z"
-description: "Test Post"
+description: "Тестовый пост"
 ---
 
-Some text.
+Какой-то текст
 
 ```jsx
 const variable = 123
 
+// компонент
 const Component = () => {
   return <div style={{ fontSize: 14 }}>
     Hello!
@@ -16,4 +17,4 @@ const Component = () => {
 }
 ```
 
-Some other text.
+Другой текст
