@@ -5,18 +5,25 @@ import { Bio } from '../components/bio'
 import { Layout } from '../components/layout'
 import { Seo } from '../components/seo'
 import { rhythm, scale } from '../utils/typography'
+import { fullDate } from '../utils/date'
 
 const BlogPostTemplate = ({ data, pageContext, location }) => {
-  const post = data.markdownRemark
-  const siteTitle = data.site.siteMetadata.title
+  const {
+    site: {
+      siteMetadata: { title: siteTitle },
+    },
+    markdownRemark: {
+      excerpt,
+      html: postHtml,
+      frontmatter: { title: postTitle, date, description },
+    },
+  } = data
+
   const { previous, next } = pageContext
 
   return (
     <Layout location={location} title={siteTitle}>
-      <Seo
-        title={post.frontmatter.title}
-        description={post.frontmatter.description || post.excerpt}
-      />
+      <Seo title={postTitle} description={description || excerpt} />
       <article>
         <header>
           <h1
@@ -25,7 +32,7 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
               marginBottom: 0,
             }}
           >
-            {post.frontmatter.title}
+            {postTitle}
           </h1>
           <p
             style={{
@@ -34,10 +41,10 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
               marginBottom: rhythm(1),
             }}
           >
-            {post.frontmatter.date}
+            {fullDate(date)}
           </p>
         </header>
-        <section dangerouslySetInnerHTML={{ __html: post.html }} />
+        <section dangerouslySetInnerHTML={{ __html: postHtml }} />
         <footer
           style={{
             padding: rhythm(1) + ' 0',
@@ -103,12 +110,11 @@ export const pageQuery = graphql`
       }
     }
     markdownRemark(fields: { slug: { eq: $slug } }) {
-      id
       excerpt(pruneLength: 160)
       html
       frontmatter {
         title
-        date(formatString: "MMMM DD, YYYY")
+        date
         description
       }
     }

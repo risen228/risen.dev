@@ -10,6 +10,30 @@ import { useStaticQuery, graphql } from 'gatsby'
 import avatar from '../assets/avatar.png'
 import { rhythm } from '../utils/typography'
 
+const SocialLink = ({ name, url }) => (
+  <a className="social-link" href={url} target="_blank">
+    {name}
+  </a>
+)
+
+const Description = ({ lines, social }) => {
+  return (
+    <div>
+      {lines.map(text => {
+        return (
+          <p key={text} className="description-line">
+            {text}
+          </p>
+        )
+      })}
+      <div>
+        <SocialLink name="GitHub" url={`https://github.com/${social.github}`} />
+        <SocialLink name="VK" url={`https://vk.com/${social.vk}`} />
+      </div>
+    </div>
+  )
+}
+
 export const Bio = () => {
   const data = useStaticQuery(graphql`
     query BioQuery {
@@ -18,13 +42,18 @@ export const Bio = () => {
           author
           social {
             github
+            vk
           }
         }
       }
     }
   `)
 
-  const { author, social } = data.site.siteMetadata
+  const {
+    site: {
+      siteMetadata: { author, social },
+    },
+  } = data
 
   return (
     <div
@@ -44,11 +73,13 @@ export const Bio = () => {
           borderRadius: '50%',
         }}
       />
-      <p style={{ maxWidth: 260, marginBottom: 0 }}>
-        Personal website by{' '}
-        <a href={`https://github.com/${social.github}`}>{author}</a>. I try to
-        make your code cleaner.
-      </p>
+      <Description
+        lines={[
+          'Очередной сайт про веб-разработку.',
+          'Стараюсь сделать ваш код лучше.',
+        ]}
+        social={social}
+      />
     </div>
   )
 }

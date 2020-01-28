@@ -1,3 +1,17 @@
 body {
-  --textLink: #8025a5;
+  --textLink: #9040bb;
+}
+
+.description-line {
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 1.6;
+}
+
+.social-link {
+  margin-right: 0.5rem;
+}
+
+.social-link:last-child {
+  margin-right: 0;
 }

@@ -5,35 +5,45 @@ import { Bio } from '../components/bio'
 import { Layout } from '../components/layout'
 import { Seo } from '../components/seo'
 import { rhythm } from '../utils/typography'
+import { fullDate } from '../utils/date'
 
 const BlogIndex = ({ data, location }) => {
-  const siteTitle = data.site.siteMetadata.title
-  const posts = data.allMarkdownRemark.edges
+  const {
+    site: {
+      siteMetadata: { title: siteTitle },
+    },
+    allMarkdownRemark: { edges: posts },
+  } = data
 
   return (
     <Layout location={location} title={siteTitle}>
-      <Seo title="All posts" />
+      <Seo title="Все посты" />
       <Bio />
       {posts.map(({ node }) => {
-        const title = node.frontmatter.title || node.fields.slug
+        const {
+          excerpt,
+          fields: { slug },
+          frontmatter: { date, title, description },
+        } = node
+
         return (
-          <article key={node.fields.slug}>
+          <article key={slug}>
             <header>
               <h3
                 style={{
                   marginBottom: rhythm(1 / 4),
                 }}
               >
-                <Link style={{ boxShadow: `none` }} to={node.fields.slug}>
+                <Link style={{ boxShadow: `none` }} to={slug}>
                   {title}
                 </Link>
               </h3>
-              <small>{node.frontmatter.date}</small>
+              <small>{fullDate(date)}</small>
             </header>
             <section>
               <p
                 dangerouslySetInnerHTML={{
-                  __html: node.frontmatter.description || node.excerpt,
+                  __html: description || excerpt,
                 }}
               />
             </section>
@@ -59,7 +69,7 @@ export const pageQuery = graphql`
             slug
           }
           frontmatter {
-            date(formatString: "MMMM DD, YYYY")
+            date
             title
             description
           }
