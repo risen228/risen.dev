@@ -44,10 +44,10 @@ export const Bio = () => {
           borderRadius: '50%',
         }}
       />
-      <p style={{ maxWidth: 310, marginBottom: 0 }}>
+      <p style={{ maxWidth: 260, marginBottom: 0 }}>
         Personal website by{' '}
-        <a href={`https://github.com/${social.github}`}>Evgeny Zakharov</a>. I
-        try to make your code cleaner.
+        <a href={`https://github.com/${social.github}`}>{author}</a>. I try to
+        make your code cleaner.
       </p>
     </div>
   )

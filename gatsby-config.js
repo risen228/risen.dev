@@ -1,7 +1,7 @@
 module.exports = {
   siteMetadata: {
     title: 'Risen.dev',
-    author: 'Evgeny Zakharov',
+    author: 'risenforces',
     description: 'Personal website by Evgeny Zakharov.',
     siteUrl: 'https://risen.dev',
     social: {
