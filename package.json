@@ -61,6 +61,9 @@
     "start": "npm run develop",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
-    "lint": "eslint src/**/*.js --quiet --fix"
+    "lint": "eslint src/**/*.js --quiet --fix",
+    "now-build": "gatsby build",
+    "deploy": "npm run build && cp now.json public/ && cd public && now alias $(now) risen.dev",
+    "dry": "npm run build && cp now.json public/ && cd public && now"
   }
 }
