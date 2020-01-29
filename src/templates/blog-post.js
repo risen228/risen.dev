@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Link, graphql } from 'gatsby'
 
 import { Bio } from '../components/bio'
@@ -7,9 +7,10 @@ import { Seo } from '../components/seo'
 import { rhythm, scale } from '../utils/typography'
 import { fullDate } from '../utils/dates'
 import { loadFontsForPost } from '../fonts/loaders'
+import { useFontsLoader } from '../helpers/hooks/use-fonts-loader'
 
 const BlogPostTemplate = ({ data, pageContext, location }) => {
-  useEffect(loadFontsForPost, [])
+  useFontsLoader(loadFontsForPost)
 
   const {
     site: {
