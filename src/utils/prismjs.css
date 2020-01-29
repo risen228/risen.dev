@@ -74,11 +74,6 @@ pre[class*="language-"] {
   margin-bottom: 0;
 }
 
-:not(pre) > code[class*="language-"] {
-  padding: .1em;
-  border-radius: .3em;
-}
-
 .token.class-name {
   color: #FAC29A;
 }
