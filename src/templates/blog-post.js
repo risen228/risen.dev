@@ -6,12 +6,9 @@ import { Layout } from '../components/layout'
 import { Seo } from '../components/seo'
 import { rhythm, scale } from '../utils/typography'
 import { fullDate } from '../utils/dates'
-import { loadFontsForPost } from '../fonts/loaders'
-import { useFontsLoader } from '../helpers/hooks/use-fonts-loader'
+import { postUrl } from '../utils/post-url'
 
 const BlogPostTemplate = ({ data, pageContext, location }) => {
-  useFontsLoader(loadFontsForPost)
-
   const {
     site: {
       siteMetadata: { title: siteTitle },
@@ -88,14 +85,14 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
         >
           <li>
             {previous && (
-              <Link to={previous.fields.slug} rel="prev">
+              <Link to={postUrl(previous.fields.slug)} rel="prev">
                 ← {previous.frontmatter.title}
               </Link>
             )}
           </li>
           <li>
             {next && (
-              <Link to={next.fields.slug} rel="next">
+              <Link to={postUrl(next.fields.slug)} rel="next">
                 {next.frontmatter.title} →
               </Link>
             )}

@@ -18,9 +18,6 @@ exports.createPages = async ({ graphql, actions }) => {
               fields {
                 slug
               }
-              frontmatter {
-                title
-              }
             }
           }
         }
@@ -32,18 +29,27 @@ exports.createPages = async ({ graphql, actions }) => {
     throw result.errors
   }
 
-  // Create blog posts pages.
-  const posts = result.data.allMarkdownRemark.edges
+  const {
+    allMarkdownRemark: { edges: posts },
+  } = result.data
 
   posts.forEach((post, index) => {
     const previous = index === posts.length - 1 ? null : posts[index + 1].node
     const next = index === 0 ? null : posts[index - 1].node
 
+    const {
+      node: {
+        fields: { slug },
+      },
+    } = post
+
+    const path = '/posts' + slug
+
     createPage({
-      path: post.node.fields.slug,
+      path,
       component: BlogPostTemplate,
       context: {
-        slug: post.node.fields.slug,
+        slug,
         previous,
         next,
       },

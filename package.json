@@ -47,7 +47,8 @@
     "eslint-plugin-react": "^7.18.0",
     "eslint-plugin-react-hooks": "^2.3.0",
     "gh-pages": "^2.2.0",
-    "prettier": "^1.19.1"
+    "prettier": "^1.19.1",
+    "rimraf": "^3.0.1"
   },
   "homepage": "https://risen.dev",
   "license": "MIT",
@@ -56,7 +57,7 @@
     "url": "git+https://github.com/risenforces/risen.dev.git"
   },
   "scripts": {
-    "build": "gatsby build",
+    "build": "rimraf public && gatsby build",
     "develop": "gatsby develop",
     "start": "npm run develop",
     "serve": "gatsby serve",

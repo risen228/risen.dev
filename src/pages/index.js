@@ -6,6 +6,7 @@ import { Layout } from '../components/layout'
 import { Seo } from '../components/seo'
 import { rhythm } from '../utils/typography'
 import { fullDate } from '../utils/dates'
+import { postUrl } from '../utils/post-url'
 
 const BlogIndex = ({ data, location }) => {
   const {
@@ -36,7 +37,7 @@ const BlogIndex = ({ data, location }) => {
                   marginBottom: rhythm(0.25),
                 }}
               >
-                <Link style={{ boxShadow: `none` }} to={slug}>
+                <Link style={{ boxShadow: `none` }} to={postUrl(slug)}>
                   {title}
                 </Link>
               </h3>
