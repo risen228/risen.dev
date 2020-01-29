@@ -11,7 +11,12 @@ import avatar from '../assets/avatar.png'
 import { rhythm } from '../utils/typography'
 
 const SocialLink = ({ name, url }) => (
-  <a className="social-link" href={url} target="_blank">
+  <a
+    className="social-link"
+    href={url}
+    target="_blank"
+    rel="nofollow noopener noreferrer"
+  >
     {name}
   </a>
 )
