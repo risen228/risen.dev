@@ -1,5 +1,9 @@
 /* eslint-disable no-unused-expressions */
 
+export function loadSharedFonts() {
+  import('./shared-fonts.css')
+}
+
 export function loadFontsForPost() {
-  import('../fonts/code-fonts.css')
+  import('./code-fonts.css')
 }

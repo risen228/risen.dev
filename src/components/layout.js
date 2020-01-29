@@ -1,9 +1,12 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Link } from 'gatsby'
 
 import { rhythm, scale } from '../utils/typography'
+import { loadSharedFonts } from '../fonts/loaders'
 
 export const Layout = ({ location, title, children }) => {
+  useEffect(loadSharedFonts, [])
+
   const rootPath = `${__PATH_PREFIX__}/`
   let header
 
