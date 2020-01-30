@@ -54,7 +54,7 @@ import * as types from './types'
 
 const initialState = 0
 
-function reducer(state = initialState, action) {
+export function reducer(state = initialState, action) {
   const { payload } = action
 
   switch(action.type) {
