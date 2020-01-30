@@ -2,11 +2,11 @@ import React from 'react'
 import { Link, graphql } from 'gatsby'
 
 import { Bio } from '../components/bio'
-import { Layout } from '../components/layout'
 import { Seo } from '../components/seo'
 import { rhythm } from '../utils/typography'
 import { fullDate } from '../utils/dates'
 import { postUrl } from '../utils/post-url'
+import { MainTemplate } from '../templates'
 
 const BlogIndex = ({ data, location }) => {
   const {
@@ -17,7 +17,7 @@ const BlogIndex = ({ data, location }) => {
   } = data
 
   return (
-    <Layout location={location} title={siteTitle}>
+    <MainTemplate location={location} title={siteTitle}>
       <Seo title="Все посты" />
       <Bio />
       {posts.map(({ node }) => {
@@ -53,7 +53,7 @@ const BlogIndex = ({ data, location }) => {
           </article>
         )
       })}
-    </Layout>
+    </MainTemplate>
   )
 }
 

@@ -65,6 +65,8 @@ export const Bio = () => {
       style={{
         display: 'flex',
         alignItems: 'center',
+        marginTop: rhythm(1),
+        marginBottom: rhythm(1),
       }}
     >
       <img

@@ -2,13 +2,13 @@ import React from 'react'
 import { Link, graphql } from 'gatsby'
 
 import { Bio } from '../components/bio'
-import { Layout } from '../components/layout'
 import { Seo } from '../components/seo'
 import { rhythm, scale } from '../utils/typography'
 import { fullDate } from '../utils/dates'
 import { postUrl } from '../utils/post-url'
+import { PostTemplate } from '../templates'
 
-const BlogPostTemplate = ({ data, pageContext, location }) => {
+const BlogPost = ({ data, pageContext }) => {
   const {
     site: {
       siteMetadata: { title: siteTitle },
@@ -20,10 +20,10 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
     },
   } = data
 
-  // const { previous, next } = pageContext
+  const { previous, next } = pageContext
 
   return (
-    <Layout location={location} title={siteTitle}>
+    <PostTemplate title={siteTitle}>
       <Seo title={postTitle} description={description || excerpt} />
       <article>
         <header>
@@ -45,61 +45,58 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
             {fullDate(date)}
           </p>
         </header>
+
         <section dangerouslySetInnerHTML={{ __html: postHtml }} />
-        <footer
-          style={{
-            padding: rhythm(1) + ' 0',
-          }}
-        >
-          <h3
+
+        <nav style={{ marginTop: rhythm(3), marginBottom: rhythm(3) }}>
+          <ul
             style={{
-              fontFamily: 'Montserrat, sans-serif',
-              marginTop: 0,
-              marginBottom: rhythm(1),
+              display: `flex`,
+              flexWrap: `wrap`,
+              justifyContent: `space-between`,
+              listStyle: `none`,
+              padding: 0,
             }}
           >
-            <Link
-              style={{
-                boxShadow: 'none',
-                textDecoration: 'none',
-                color: 'var(--textLink)',
-              }}
-              to="/"
-            >
-              {siteTitle}
-            </Link>
-          </h3>
-          <Bio />
-        </footer>
-      </article>
+            <li>
+              {previous && (
+                <Link to={postUrl(previous.fields.slug)} rel="prev">
+                  ← {previous.frontmatter.title}
+                </Link>
+              )}
+            </li>
+            <li>
+              {next && (
+                <Link to={postUrl(next.fields.slug)} rel="next">
+                  {next.frontmatter.title} →
+                </Link>
+              )}
+            </li>
+          </ul>
+        </nav>
 
-      {/* <nav>
-        <ul
+        <h3
           style={{
-            display: `flex`,
-            flexWrap: `wrap`,
-            justifyContent: `space-between`,
-            listStyle: `none`,
-            padding: 0,
+            fontFamily: 'Montserrat, sans-serif',
+            marginTop: 0,
+            marginBottom: rhythm(1),
           }}
         >
-          <li>
-            {previous && (
-              <Link to={postUrl(previous.fields.slug)} rel="prev">
-                ← {previous.frontmatter.title}
-              </Link>
-            )}
-          </li>
-          <li>
-            {next && (
-              <Link to={postUrl(next.fields.slug)} rel="next">
-                {next.frontmatter.title} →
-              </Link>
-            )}
-          </li>
-        </ul>
-      </nav> */}
-    </Layout>
+          <Link
+            style={{
+              boxShadow: 'none',
+              textDecoration: 'none',
+              color: 'var(--textLink)',
+            }}
+            to="/"
+          >
+            {siteTitle}
+          </Link>
+        </h3>
+
+        <Bio />
+      </article>
+    </PostTemplate>
   )
 }
 
@@ -122,4 +119,4 @@ export const pageQuery = graphql`
   }
 `
 
-export default BlogPostTemplate
+export default BlogPost
