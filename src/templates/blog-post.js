@@ -7,11 +7,8 @@ import { Seo } from '../components/seo'
 import { rhythm, scale } from '../utils/typography'
 import { fullDate } from '../utils/dates'
 import { postUrl } from '../utils/post-url'
-import { useFontsLoader, loadBlogPostFonts } from '../utils/fonts-loading'
 
 const BlogPostTemplate = ({ data, pageContext, location }) => {
-  useFontsLoader(loadBlogPostFonts)
-
   const {
     site: {
       siteMetadata: { title: siteTitle },
