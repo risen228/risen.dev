@@ -2,8 +2,11 @@ import React from 'react'
 import { Link } from 'gatsby'
 
 import { rhythm, scale } from '../utils/typography'
+import { useFontsLoader, loadSharedFonts } from '../utils/fonts-loading'
 
 export const Layout = ({ location, title, children }) => {
+  useFontsLoader(loadSharedFonts)
+
   const rootPath = `${__PATH_PREFIX__}/`
   let header
 
