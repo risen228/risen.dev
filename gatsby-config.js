@@ -78,6 +78,7 @@ module.exports = {
         icon: 'content/assets/icon.png',
       },
     },
+    'gatsby-plugin-sitemap',
     'gatsby-plugin-react-helmet',
     {
       resolve: 'gatsby-plugin-typography',
