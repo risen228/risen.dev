@@ -20,7 +20,7 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
     },
   } = data
 
-  const { previous, next } = pageContext
+  // const { previous, next } = pageContext
 
   return (
     <Layout location={location} title={siteTitle}>
@@ -73,7 +73,7 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
         </footer>
       </article>
 
-      <nav>
+      {/* <nav>
         <ul
           style={{
             display: `flex`,
@@ -98,7 +98,7 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
             )}
           </li>
         </ul>
-      </nav>
+      </nav> */}
     </Layout>
   )
 }
