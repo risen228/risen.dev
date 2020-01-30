@@ -8,8 +8,8 @@ export const Main = ({ title, children }) => {
   return (
     <div
       style={{
-        marginLeft: `auto`,
-        marginRight: `auto`,
+        marginLeft: 'auto',
+        marginRight: 'auto',
         maxWidth: rhythm(24),
         padding: `${rhythm(1.5)} ${rhythm(0.75)}`,
       }}
@@ -23,9 +23,9 @@ export const Main = ({ title, children }) => {
         >
           <Link
             style={{
-              boxShadow: `none`,
-              textDecoration: `none`,
-              color: `inherit`,
+              boxShadow: 'none',
+              textDecoration: 'none',
+              color: 'inherit',
             }}
             to="/"
           >

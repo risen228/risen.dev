@@ -8,8 +8,8 @@ export const Post = ({ title, children }) => {
   return (
     <div
       style={{
-        marginLeft: `auto`,
-        marginRight: `auto`,
+        marginLeft: 'auto',
+        marginRight: 'auto',
         maxWidth: rhythm(24),
         padding: `${rhythm(1.5)} ${rhythm(0.75)}`,
       }}
@@ -17,16 +17,16 @@ export const Post = ({ title, children }) => {
       <header style={{ marginBottom: rhythm(1) }}>
         <h3
           style={{
-            fontFamily: `Montserrat, sans-serif`,
+            fontFamily: 'Montserrat, sans-serif',
             marginTop: 0,
             marginBottom: 0,
           }}
         >
           <Link
             style={{
-              boxShadow: `none`,
-              textDecoration: `none`,
-              color: `inherit`,
+              boxShadow: 'none',
+              textDecoration: 'none',
+              color: 'inherit',
             }}
             to="/"
           >

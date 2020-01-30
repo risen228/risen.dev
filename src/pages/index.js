@@ -37,7 +37,7 @@ const BlogIndex = ({ data, location }) => {
                   marginBottom: rhythm(0.25),
                 }}
               >
-                <Link style={{ boxShadow: `none` }} to={postUrl(slug)}>
+                <Link style={{ boxShadow: 'none' }} to={postUrl(slug)}>
                   {title}
                 </Link>
               </h3>
