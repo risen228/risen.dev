@@ -2,7 +2,8 @@ module.exports = {
   siteMetadata: {
     title: 'Risen.dev',
     author: 'risenforces',
-    description: 'Очередной блог о веб-разработке.',
+    description:
+      'Очередной блог о веб-разработке. Стараюсь сделать ваш код лучше.',
     siteUrl: 'https://risen.dev',
     social: {
       github: 'risenforces',
