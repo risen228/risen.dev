@@ -26,3 +26,14 @@ body {
   padding: 0.15em 0.2em 0.05em !important;
   white-space: normal;
 }
+
+a.anchor {
+  padding: 4px;
+  line-height: 16px;
+  box-shadow: none;
+  transform: translateX(-110%) !important;
+}
+
+a.anchor svg {
+  stroke: var(--textLink);
+}
