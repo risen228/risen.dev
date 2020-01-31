@@ -175,3 +175,11 @@ code.language-scss,
 .token.entity {
   cursor: help;
 }
+
+.token.tree-line {
+  color: #696969;
+}
+
+.token.tree-filename {
+  color: #cecece;
+}

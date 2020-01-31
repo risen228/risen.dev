@@ -45,6 +45,18 @@ module.exports = {
             resolve: 'gatsby-remark-prismjs',
             options: {
               inlineCodeMarker: '÷',
+              languageExtensions: [
+                {
+                  language: 'tree',
+                  extend: 'css',
+                  insertBefore: {
+                    function: {
+                      'tree-line': /(┃|┗|┣)/,
+                      'tree-filename': /[\w._-]+/,
+                    },
+                  },
+                },
+              ],
             },
           },
           'gatsby-remark-copy-linked-files',
