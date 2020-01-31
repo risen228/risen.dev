@@ -23,7 +23,7 @@ description: "Дьявол никогда не выглядел так хоро�
 
 Модуль имеет следующую структуру:
 
-```
+```tree
 counter
  ┣ actions.js
  ┣ index.js
@@ -184,6 +184,55 @@ export const Counter = () => {
 ```js
 const { reset: resetUsers } = useActions(usersActions)
 const { reset: resetBlacklist } = useActions(blacklistActions)
+```
+
+## Пример структуры приложения
+
+```tree
+src
+ ┣ features
+ ┃ ┣ files
+ ┃ ┃ ┣ modules
+ ┃ ┃ ┃ ┗ files
+ ┃ ┃ ┃ ┃ ┣ actions.js
+ ┃ ┃ ┃ ┃ ┣ index.js
+ ┃ ┃ ┃ ┃ ┣ reducer.js
+ ┃ ┃ ┃ ┃ ┣ selectors.js
+ ┃ ┃ ┃ ┃ ┗ types.js
+ ┃ ┃ ┣ Files.js
+ ┃ ┃ ┣ FilesView.js
+ ┃ ┃ ┗ index.js
+ ┃ ┗ users
+ ┃ ┃ ┣ modules
+ ┃ ┃ ┃ ┗ users
+ ┃ ┃ ┃ ┃ ┣ actions.js
+ ┃ ┃ ┃ ┃ ┣ index.js
+ ┃ ┃ ┃ ┃ ┣ reducer.js
+ ┃ ┃ ┃ ┃ ┣ selectors.js
+ ┃ ┃ ┃ ┃ ┗ types.js
+ ┃ ┃ ┣ index.js
+ ┃ ┃ ┣ Users.js
+ ┃ ┃ ┗ UsersView.js
+ ┣ lib
+ ┃ ┗ store
+ ┃ ┃ ┣ modules
+ ┃ ┃ ┃ ┣ global-modals
+ ┃ ┃ ┃ ┃ ┣ actions.js
+ ┃ ┃ ┃ ┃ ┣ index.js
+ ┃ ┃ ┃ ┃ ┣ reducer.js
+ ┃ ┃ ┃ ┃ ┣ selectors.js
+ ┃ ┃ ┃ ┃ ┗ types.js
+ ┃ ┃ ┃ ┗ session
+ ┃ ┃ ┃ ┃ ┣ actions.js
+ ┃ ┃ ┃ ┃ ┣ index.js
+ ┃ ┃ ┃ ┃ ┣ reducer.js
+ ┃ ┃ ┃ ┃ ┣ selectors.js
+ ┃ ┃ ┃ ┃ ┗ types.js
+ ┃ ┃ ┣ index.js
+ ┃ ┃ ┣ root-reducer.js
+ ┃ ┃ ┗ store.js
+ ┣ App.js
+ ┗ index.js
 ```
 
 ## Небольшие итоги
