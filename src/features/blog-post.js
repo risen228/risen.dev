@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link, graphql } from 'gatsby'
-
+import { Disqus } from 'gatsby-plugin-disqus'
 import { Bio } from '../components/bio'
 import { Seo } from '../components/seo'
 import { rhythm, scale } from '../utils/typography'
@@ -33,7 +33,12 @@ const Header = ({ postTitle, date }) => {
 }
 
 const PostText = ({ postHtml }) => {
-  return <section dangerouslySetInnerHTML={{ __html: postHtml }} />
+  return (
+    <section
+      style={{ marginBottom: rhythm(3) }}
+      dangerouslySetInnerHTML={{ __html: postHtml }}
+    />
+  )
 }
 
 const Navigation = ({ next, previous }) => {
@@ -47,11 +52,17 @@ const Navigation = ({ next, previous }) => {
           flexWrap: 'wrap',
           listStyle: 'none',
           padding: 0,
-          marginLeft: 0,
+          margin: 0,
         }}
       >
         {previous && (
-          <li style={{ paddingRight: rhythm(0.5), textAlign: 'left' }}>
+          <li
+            style={{
+              paddingRight: rhythm(0.5),
+              marginBottom: 0,
+              textAlign: 'left',
+            }}
+          >
             <Link to={postUrl(previous.fields.slug)} rel="prev">
               ← {previous.frontmatter.title}
             </Link>
@@ -62,6 +73,7 @@ const Navigation = ({ next, previous }) => {
             style={{
               paddingLeft: rhythm(0.5),
               marginLeft: 'auto',
+              marginBottom: 0,
               textAlign: 'right',
             }}
           >
@@ -75,41 +87,46 @@ const Navigation = ({ next, previous }) => {
   )
 }
 
-const Footer = ({ siteTitle, next, previous }) => {
+const Footer = ({ siteTitle, next, previous, disqusConfig }) => {
   return (
-    <footer style={{ marginTop: rhythm(2) }}>
+    <footer style={{ marginTop: rhythm(3), marginBottom: rhythm(3) }}>
       <Navigation next={next} previous={previous} />
 
-      <h3
-        style={{
-          fontFamily: 'Montserrat, sans-serif',
-          marginTop: 0,
-          marginBottom: rhythm(1),
-        }}
-      >
-        <Link
+      <div style={{ marginBottom: rhythm(3) }}>
+        <h3
           style={{
-            boxShadow: 'none',
-            textDecoration: 'none',
-            color: 'var(--textLink)',
+            fontFamily: 'Montserrat, sans-serif',
+            marginTop: 0,
+            marginBottom: rhythm(1),
           }}
-          to="/"
         >
-          {siteTitle}
-        </Link>
-      </h3>
+          <Link
+            style={{
+              boxShadow: 'none',
+              textDecoration: 'none',
+              color: 'var(--textLink)',
+            }}
+            to="/"
+          >
+            {siteTitle}
+          </Link>
+        </h3>
 
-      <Bio />
+        <Bio />
+      </div>
+
+      <Disqus config={disqusConfig} />
     </footer>
   )
 }
 
-const BlogPost = ({ data, pageContext }) => {
+const BlogPost = ({ data, location, pageContext }) => {
   const {
     site: {
-      siteMetadata: { title: siteTitle },
+      siteMetadata: { title: siteTitle, siteUrl },
     },
     markdownRemark: {
+      id,
       excerpt,
       html: postHtml,
       frontmatter: { title: postTitle, date, description },
@@ -118,13 +135,24 @@ const BlogPost = ({ data, pageContext }) => {
 
   const { previous, next } = pageContext
 
+  const disqusConfig = {
+    url: siteUrl + location.pathname,
+    identifier: id,
+    title: postTitle,
+  }
+
   return (
     <PostTemplate title={siteTitle}>
       <Seo title={postTitle} description={description || excerpt} />
       <article>
         <Header postTitle={postTitle} date={date} />
         <PostText postHtml={postHtml} />
-        <Footer siteTitle={siteTitle} next={next} previous={previous} />
+        <Footer
+          siteTitle={siteTitle}
+          next={next}
+          previous={previous}
+          disqusConfig={disqusConfig}
+        />
       </article>
     </PostTemplate>
   )
@@ -135,9 +163,11 @@ export const pageQuery = graphql`
     site {
       siteMetadata {
         title
+        siteUrl
       }
     }
     markdownRemark(fields: { slug: { eq: $slug } }) {
+      id
       excerpt(pruneLength: 160)
       html
       frontmatter {
