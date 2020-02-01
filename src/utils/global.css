@@ -58,7 +58,7 @@ a.anchor svg {
   article > section h5,
   article > section h6 {
     padding-left: 1rem;
-    margin-left: 0.5rem;
+    margin-left: 0;
   }
 }
 
