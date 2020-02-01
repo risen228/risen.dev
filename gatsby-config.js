@@ -57,7 +57,7 @@ module.exports = {
                   extend: 'css',
                   insertBefore: {
                     function: {
-                      'tree-line': /(┃|┗|┣)/,
+                      'tree-line-group': /[┃┗┣ ]+/,
                       'tree-filename': /[\w._-]+/,
                     },
                   },
