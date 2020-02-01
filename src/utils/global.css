@@ -27,13 +27,43 @@ body {
   white-space: normal;
 }
 
+article > section h1,
+article > section h2,
+article > section h3,
+article > section h4,
+article > section h5,
+article > section h6 {
+  padding-left: 1rem;
+  margin-left: -1rem;
+}
+
 a.anchor {
+  font-size: 1rem;
+  height: 24px;
   padding: 4px;
-  line-height: 16px;
+  top: 50% !important;
+  transform: translate(-0.75rem, -50%) !important;
   box-shadow: none;
-  transform: translateX(-110%) !important;
 }
 
 a.anchor svg {
   stroke: var(--textLink);
+}
+
+@media (max-width: 720px) {
+  article > section h1,
+  article > section h2,
+  article > section h3,
+  article > section h4,
+  article > section h5,
+  article > section h6 {
+    padding-left: 1rem;
+    margin-left: 0.5rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  a.anchor svg {
+    visibility: visible !important;
+  }
 }
