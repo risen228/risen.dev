@@ -96,7 +96,7 @@ export const reset = () => ({ type: types.RESET })
 
 - `selectors.js`
 
-Селекторы, которым, кстати, будет посвящена отдельная статья.
+Селекторы, которым, кстати, посвящена отдельная [статья](/posts/cooking-selectors).
 
 ```js
 export const everything = state => state.counter
