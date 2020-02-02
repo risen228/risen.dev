@@ -5,7 +5,7 @@ import { Bio } from '../components/bio'
 import { Seo } from '../components/seo'
 import { rhythm, scale } from '../utils/typography'
 import { fullDate } from '../utils/dates'
-import { postUrl } from '../utils/post-url'
+import { toPostUrl } from '../utils/post-url'
 import { PostTemplate } from '../templates'
 
 const Header = ({ postTitle, date }) => {
@@ -63,7 +63,7 @@ const Navigation = ({ next, previous }) => {
               textAlign: 'left',
             }}
           >
-            <Link to={postUrl(previous.fields.slug)} rel="prev">
+            <Link to={toPostUrl(previous.fields.slug)} rel="prev">
               ← {previous.frontmatter.title}
             </Link>
           </li>
@@ -77,7 +77,7 @@ const Navigation = ({ next, previous }) => {
               textAlign: 'right',
             }}
           >
-            <Link to={postUrl(next.fields.slug)} rel="next">
+            <Link to={toPostUrl(next.fields.slug)} rel="next">
               {next.frontmatter.title} →
             </Link>
           </li>

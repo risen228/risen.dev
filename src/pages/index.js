@@ -5,7 +5,7 @@ import { Bio } from '../components/bio'
 import { Seo } from '../components/seo'
 import { rhythm } from '../utils/typography'
 import { fullDate } from '../utils/dates'
-import { postUrl } from '../utils/post-url'
+import { toPostUrl } from '../utils/post-url'
 import { MainTemplate } from '../templates'
 
 const BlogIndex = ({ data, location }) => {
@@ -37,7 +37,7 @@ const BlogIndex = ({ data, location }) => {
                   marginBottom: rhythm(0.25),
                 }}
               >
-                <Link style={{ boxShadow: 'none' }} to={postUrl(slug)}>
+                <Link style={{ boxShadow: 'none' }} to={toPostUrl(slug)}>
                   {title}
                 </Link>
               </h3>

@@ -1,3 +1,3 @@
-export function postUrl(slug) {
-  return '/posts' + slug
+export function toPostUrl(slug) {
+  return '/posts' + slug.replace(/\/$/, '')
 }
