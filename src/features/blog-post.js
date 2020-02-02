@@ -87,6 +87,12 @@ const Navigation = ({ next, previous }) => {
   )
 }
 
+const WrappedDisqus = ({ config }) => {
+  if (process.env.GATSBY_DISABLE_DISQUS === 'true') return null
+
+  return <Disqus config={config} />
+}
+
 const Footer = ({ siteTitle, next, previous, disqusConfig }) => {
   return (
     <footer style={{ marginTop: rhythm(3), marginBottom: rhythm(3) }}>
@@ -115,7 +121,7 @@ const Footer = ({ siteTitle, next, previous, disqusConfig }) => {
         <Bio />
       </div>
 
-      <Disqus config={disqusConfig} />
+      <WrappedDisqus config={disqusConfig} />
     </footer>
   )
 }
