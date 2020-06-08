@@ -12,7 +12,7 @@ import { rhythm } from '../utils/typography'
 
 const SocialLink = ({ name, url }) => (
   <a
-    className="social-link"
+    className="social-link link-hover"
     href={url}
     target="_blank"
     rel="nofollow noopener noreferrer"
