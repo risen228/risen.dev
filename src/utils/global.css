@@ -18,6 +18,31 @@ body {
   margin-right: 0;
 }
 
+.link-hover {
+	position: relative;
+	display: inline-block;
+	margin-right: 0.5rem;
+	box-shadow: none;
+}
+
+.link-hover:after {
+	content: "";
+	position: absolute;
+	bottom: 0;
+	left: 50%;
+	width: 0;
+	height: 1px;
+	background-color: var(--textLink);
+	opacity: 0;
+	transition: all 0.5s ease;
+}
+
+.link-hover:hover:after {
+	width: 100%;
+	left: 0;
+	opacity: 1;
+}
+
 /* Inline code */
 :not(pre) > code[class*='language-'] {
   border-radius: 0.3em;
