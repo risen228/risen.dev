@@ -21,7 +21,6 @@ body {
 .link-hover {
 	position: relative;
 	display: inline-block;
-	margin-right: 0.5rem;
 	box-shadow: none;
 }
 
