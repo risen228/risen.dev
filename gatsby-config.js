@@ -73,6 +73,14 @@ module.exports = {
               target: '_blank',
             },
           },
+          {
+            resolve: `gatsby-remark-classes`,
+            options: {
+              classMap: {
+                link: 'link-hover',
+              },
+            },
+          },
         ],
       },
     },
