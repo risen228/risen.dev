@@ -43,21 +43,16 @@ body {
 	opacity: 1;
 }
 
-.link-hover.__l:after {
+.link-hover.__left:after {
 	left: 0;
 }
 
-.link-hover.__l-r:after {
+.link-hover.__right:after {
 	left: auto;
 	right: 0;
 }
 
-.link-hover.__r:after {
-	left: auto;
-	right: 0;
-}
-
-.link-hover.__r:hover:after {
+.link-hover.__right:hover:after {
 	left: auto;
 }
 
