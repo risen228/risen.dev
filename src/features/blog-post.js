@@ -63,7 +63,11 @@ const Navigation = ({ next, previous }) => {
               textAlign: 'left',
             }}
           >
-            <Link to={toPostUrl(previous.fields.slug)} rel="prev">
+            <Link
+              className="link-hover __right"
+              to={toPostUrl(previous.fields.slug)}
+              rel="prev"
+            >
               ← {previous.frontmatter.title}
             </Link>
           </li>
@@ -77,7 +81,11 @@ const Navigation = ({ next, previous }) => {
               textAlign: 'right',
             }}
           >
-            <Link to={toPostUrl(next.fields.slug)} rel="next">
+            <Link
+              className="link-hover __left"
+              to={toPostUrl(next.fields.slug)}
+              rel="next"
+            >
               {next.frontmatter.title} →
             </Link>
           </li>
