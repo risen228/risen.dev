@@ -10,6 +10,10 @@ Wordpress2016.overrideThemeStyles = () => ({
   'a.gatsby-resp-image-link': {
     boxShadow: 'none',
   },
+  'h4': {
+    textTransform: 'none',
+    letterSpacing: 0,
+  },
 })
 
 delete Wordpress2016.googleFonts
