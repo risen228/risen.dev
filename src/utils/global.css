@@ -1,3 +1,7 @@
+html {
+  overflow-y: initial;
+}
+
 body {
   --textLink: #9040bb;
   --inlineCodeBackground: rgba(255, 229, 100, 0.2);
@@ -19,40 +23,40 @@ body {
 }
 
 .link-hover {
-	position: relative;
-	display: inline-block;
-	box-shadow: none;
+  position: relative;
+  display: inline-block;
+  box-shadow: none;
 }
 
 .link-hover:after {
-	content: "";
-	position: absolute;
-	bottom: 0;
-	left: 50%;
-	width: 0;
-	height: 1px;
-	background-color: var(--textLink);
-	opacity: 0;
-	transition: all 0.5s ease;
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 1px;
+  background-color: var(--textLink);
+  opacity: 0;
+  transition: all 0.5s ease;
 }
 
 .link-hover:hover:after {
-	width: 100%;
-	left: 0;
-	opacity: 1;
+  width: 100%;
+  left: 0;
+  opacity: 1;
 }
 
 .link-hover.__left:after {
-	left: 0;
+  left: 0;
 }
 
 .link-hover.__right:after {
-	left: auto;
-	right: 0;
+  left: auto;
+  right: 0;
 }
 
 .link-hover.__right:hover:after {
-	left: auto;
+  left: auto;
 }
 
 /* Inline code */
