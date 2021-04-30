@@ -7,7 +7,6 @@ import { toPostUrl } from '../utils/post-url'
 import { PostTemplate } from '../templates'
 import { Seo } from './seo'
 import { Bio } from './bio'
-import { CriticalHeadContent } from './critical-head-content'
 
 const Header = ({ postTitle, date }) => {
   return (
@@ -158,7 +157,6 @@ const BlogPost = ({ data, location, pageContext }) => {
 
   return (
     <PostTemplate title={siteTitle}>
-      <CriticalHeadContent />
       <Seo title={postTitle} description={description || excerpt} />
       <article>
         <Header postTitle={postTitle} date={date} />

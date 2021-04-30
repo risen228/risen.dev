@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import clsx from 'clsx'
 
 function getSystemColorScheme() {
@@ -33,6 +33,10 @@ const ThemeSwitcherInner = () => {
   const [themeChoice, setThemeChoice] = useState(() => {
     return getSavedThemeChoice()
   })
+
+  useLayoutEffect(() => {
+    document.documentElement.style.backgroundColor = ''
+  }, [])
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-color-scheme: dark)')

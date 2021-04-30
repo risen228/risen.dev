@@ -7,7 +7,6 @@ import { rhythm } from '../utils/typography'
 import { fullDate } from '../utils/dates'
 import { toPostUrl } from '../utils/post-url'
 import { MainTemplate } from '../templates'
-import { CriticalHeadContent } from '../features/critical-head-content'
 
 const BlogIndex = ({ data, location }) => {
   const {
@@ -19,7 +18,6 @@ const BlogIndex = ({ data, location }) => {
 
   return (
     <MainTemplate location={location} title={siteTitle}>
-      <CriticalHeadContent />
       <Seo title="Все посты" />
       <Bio />
       {posts.map(({ node }) => {
