@@ -13,7 +13,7 @@
   margin-left: -1.3125rem;
   margin-right: -1.3125rem;
   border-radius: 10px;
-  background: #011627;
+  background: var(--code-bg);
   -webkit-overflow-scrolling: touch;
   overflow: auto;
 }

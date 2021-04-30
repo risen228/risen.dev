@@ -31,8 +31,8 @@ exports.onRenderBody = ({ setHeadComponents }) => {
         var theme = getCurrentTheme(themeChoice)
       
         var colors = {
-          light: '#ffffff',
-          dark: '#01080e',
+          light: '#fff',
+          dark: '#000',
         }
       
         document.documentElement.classList.add('light-theme')
