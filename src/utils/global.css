@@ -3,7 +3,7 @@ html {
 }
 
 html {
-  background-color: var(--c-bg-primary) !important;
+  background-color: var(--c-bg-primary);
 }
 
 .app-header {
