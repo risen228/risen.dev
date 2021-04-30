@@ -22,6 +22,11 @@ function getCurrentTheme(themeChoice, systemTheme) {
 }
 
 export const ThemeSwitcher = () => {
+  if (typeof window === 'undefined') return null
+  return <ThemeSwitcherInner />
+}
+
+const ThemeSwitcherInner = () => {
   const [systemTheme, setSystemTheme] = useState(() => {
     return getSystemColorScheme()
   })
