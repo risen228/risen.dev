@@ -1,12 +1,13 @@
 import React from 'react'
 import { Link, graphql } from 'gatsby'
 import { Disqus } from 'gatsby-plugin-disqus'
-import { Bio } from '../components/bio'
-import { Seo } from '../components/seo'
 import { rhythm, scale } from '../utils/typography'
 import { fullDate } from '../utils/dates'
 import { toPostUrl } from '../utils/post-url'
 import { PostTemplate } from '../templates'
+import { Seo } from './seo'
+import { Bio } from './bio'
+import { CriticalHeadContent } from './critical-head-content'
 
 const Header = ({ postTitle, date }) => {
   return (
@@ -118,7 +119,7 @@ const Footer = ({ siteTitle, next, previous, disqusConfig }) => {
             style={{
               boxShadow: 'none',
               textDecoration: 'none',
-              color: 'var(--textLink)',
+              color: 'var(--text-link-color)',
             }}
             to="/"
           >
@@ -157,6 +158,7 @@ const BlogPost = ({ data, location, pageContext }) => {
 
   return (
     <PostTemplate title={siteTitle}>
+      <CriticalHeadContent />
       <Seo title={postTitle} description={description || excerpt} />
       <article>
         <Header postTitle={postTitle} date={date} />

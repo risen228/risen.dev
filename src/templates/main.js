@@ -2,7 +2,8 @@ import React from 'react'
 import { Link } from 'gatsby'
 
 import { rhythm, scale } from '../utils/typography'
-import { Footer } from '../components/footer'
+import { Footer } from '../features/footer'
+import { Header } from '../features/header'
 
 export const Main = ({ title, children }) => {
   return (
@@ -14,26 +15,31 @@ export const Main = ({ title, children }) => {
         padding: `${rhythm(1.5)} ${rhythm(0.75)}`,
       }}
     >
-      <header style={{ marginBottom: rhythm(1.5) }}>
-        <h1
-          style={{
-            ...scale(0.75),
-            marginTop: 0,
-          }}
-        >
-          <Link
+      <Header
+        title={
+          <h1
             style={{
-              boxShadow: 'none',
-              textDecoration: 'none',
-              color: 'inherit',
+              ...scale(0.75),
+              marginTop: 0,
+              marginBottom: 0,
             }}
-            to="/"
           >
-            {title}
-          </Link>
-        </h1>
-      </header>
+            <Link
+              style={{
+                boxShadow: 'none',
+                textDecoration: 'none',
+                color: 'inherit',
+              }}
+              to="/"
+            >
+              {title}
+            </Link>
+          </h1>
+        }
+      />
+
       <main>{children}</main>
+
       <Footer />
     </div>
   )

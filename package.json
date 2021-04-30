@@ -8,6 +8,7 @@
     "url": "https://github.com/risenforces/risen.dev/issues"
   },
   "dependencies": {
+    "clsx": "^1.1.1",
     "gatsby": "^2.19.7",
     "gatsby-image": "^2.2.39",
     "gatsby-plugin-disqus": "^1.1.4",

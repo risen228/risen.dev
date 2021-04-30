@@ -2,10 +2,16 @@ html {
   overflow-y: initial;
 }
 
-body {
-  --textLink: #9040bb;
-  --inlineCodeBackground: rgba(255, 229, 100, 0.2);
-  --inlineCodeText: #1a1a1a;
+html {
+  background-color: var(--c-bg-primary) !important;
+}
+
+.app-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
 }
 
 .description-line {
@@ -35,7 +41,7 @@ body {
   left: 50%;
   width: 0;
   height: 1px;
-  background-color: var(--textLink);
+  background-color: var(--text-link-color);
   opacity: 0;
   transition: all 0.5s ease;
 }
@@ -62,8 +68,8 @@ body {
 /* Inline code */
 :not(pre) > code[class*='language-'] {
   border-radius: 0.3em;
-  background: var(--inlineCodeBackground);
-  color: var(--inlineCodeText);
+  background: var(--inline-code-bg);
+  color: var(--inline-code-color);
   padding: 0.15em 0.2em 0.05em !important;
   white-space: normal;
 }
@@ -88,7 +94,14 @@ a.anchor {
 }
 
 a.anchor svg {
-  stroke: var(--textLink);
+  stroke: var(--text-link-color);
+}
+
+@media (max-width: 568px) {
+  .app-header {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+  }
 }
 
 @media (max-width: 720px) {

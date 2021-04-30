@@ -4,8 +4,11 @@ import './global.css'
 import './prismjs.css'
 
 Wordpress2016.overrideThemeStyles = () => ({
+  'body': {
+    color: 'var(--c-text-primary)',
+  },
   'a': {
-    color: 'var(--textLink)',
+    color: 'var(--text-link-color)',
   },
   'a.gatsby-resp-image-link': {
     boxShadow: 'none',
@@ -13,6 +16,11 @@ Wordpress2016.overrideThemeStyles = () => ({
   'h4': {
     textTransform: 'none',
     letterSpacing: 0,
+  },
+  'blockquote': {
+    fontSize: '1rem',
+    color: 'var(--quote-color)',
+    borderLeftColor: 'var(--quote-border)',
   },
 })
 
