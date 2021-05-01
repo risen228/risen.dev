@@ -154,8 +154,6 @@ const BlogPost = ({ data, location, pageContext }) => {
 
   const { previous, next, translations } = pageContext
 
-  console.log(previous, next)
-
   const disqusConfig = {
     url: siteUrl + location.pathname,
     identifier: id,
