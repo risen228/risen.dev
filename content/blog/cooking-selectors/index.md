@@ -1,28 +1,28 @@
 ---
-title: Готовим селекторы
+title: Cooking selectors
 date: "2020-07-20T12:34:37.608Z"
-description: "Их можно делать и без reselect!"
+description: "You can do a lot of things without reselect!"
 ---
 
-Редакс, в отличие от эффектора и многих других стейт-менеджеров, сам по себе не предоставляет никаких инструментов для удобного получения и комбинирования хранящихся в сторе данных. Именно эту критическую проблему и решают селекторы, являясь своеобразными геттерами для извлечения отдельных частей стейта.
+Redux, unlike Effector and many other state-managers, by itself doesn't provide a convenient way to get and combine data from the store. Selectors were created to address this problem. And they sort of stand as a getters for extracting specific parts of the state.
 
 ```js
 // src/features/cart/module/selectors.js
 
-// Селектор стейта корзины покупок
+// Cart state selector
 export const everything = state => state.cart
 
-// Массив покупок, добавленных в корзину
+// Items added to the cart
 export const items = state => everything(state).items
 
-// Бонусы, которые будут получены за покупку
+// Bonuses that will be collected from successful purchase
 export const collectedBonuses = state => everything(state).collectedBonuses
 
 /*
- * Суммарная стоимость покупок
- * Здесь используется функция createSelector из библиотеки reselect,
- * в данном случае она нужна чтобы не делать вычисления лишний раз
- * Подробнее такие селекторы будут рассмотрены ниже
+ * Total purchase amount
+ * Here we use createSelector function from reselect.
+ * In this case it needed to prevent extra computations.
+ * We will learn more about this type of selectors later on.
  */
 export const totalAmount = createSelector(
   items,
@@ -33,106 +33,110 @@ export const totalAmount = createSelector(
 )
 ```
 
-## Основные правила использования селекторов {#rules}
+## Main rules of using selectors {#rules}
 
-Чтобы использовать селекторы наиболее эффективно, надо соблюдать несколько правил.
+To use selectors in the most effective way, we should follow some rules.
 
-### Инкапсуляция {#encapsulation-rule}
+### Encapsulation {#encapsulation-rule}
 
-Селектор позволяет скрыть в себе логику, ответственную за получение конкретной части данных.
+Selector is allowing us to hide some logic responsible for getting a specific part of the state.
 
-Благодаря этому, внешний код (в том числе другие селекторы) может не задумываться, по какому пути нужно обратиться чтобы получить нужный срез стейта.
+Thereby, external code (including other selectors) doesn't need to know about details like property path to state's part.
 
 ```js
 /*
- * 1 вариант
- * Здесь мы указываем полный путь до части данных
- * И если ключ под которым расположена корзина изменится, например на shoppingCart,
- * нам придется заменить путь в 3 местах сразу
- * При росте приложения количество мест может значительно увеличиться
+ * Option 1
+ * Here we specify the full path to state slice.
+ * 
+ * And if some key changes (cart for example),
+ * we will need to update all 3 lines of code.
+ * 
+ * It can become a serious problem in big applications.
  */
 const everything = state => state.cart
 const items = state => state.cart.items 
 const collectedBonuses = state => state.cart.collectedBonuses
 
 /*
- * 2 вариант
- * Здесь мы полагаемся на остальные селекторы,
- * указывая лишь путь от их результата до нужной части данных
- * Если ключ под которым расположена корзина изменится,
- * нам нужно будет поменять путь лишь в 1 месте - в селекторе everything
- * Таким образом каждый из селекторов имеет ограниченную ответственность,
- * благодаря чему рефакторить и поддерживать код становится в разы проще
+ * Option 2
+ * Here we rely on other selectors.
+ * 
+ * And if some key changes,
+ * we will need to update only 1 line of code.
+ * 
+ * For example, in case of 'card' it will be only selector 'everything'.
+ * 
+ * So, each of selectors is responsible only for its slice of the state.
+ * It's easy to maintain and refactor.
  */
 const everything = state => state.cart
 const items = state => everything(state).items 
 const collectedBonuses = state => everything(state).collectedBonuses
 ```
 
-### Реюзабельность {#reusability-rule}
+### Reusability {#reusability-rule}
 
-Можно объявить конретный селектор всего единожды и потом использовать его неограниченное количество раз в любых других местах приложения. Здесь как раз можно проследить инкапсуляцию, ведь в данном случае мы пользуемся заранее объявленной функцией, не описывая каждый раз её содержимое, и таким образом не заставляя внешний код знать о деталях реализации селектора.
-
-Именно поэтому не стоит объявлять селекторы по месту использования (например в компонентах). Это порождает те же проблемы, что были перечислены выше (в секции про инкапсуляцию).
+We can declare a selector once, and then use it everywhere in the app. In this case, reusability is the consequence of encapsulation.
 
 ```js
 /*
- * Плохо!
- * 1) Мы не сможем использовать этот селектор внутри других селекторов
- * 2) При каких-то изменениях структуры стора нам придется обновлять кучу компонентов
+ * Bad!
+ * 1) We can't use it in other selectors.
+ * 2) If some path changes, we will need to update a lot of components
+ *    relying on this selector. Just like in example from encapsulation section.
  */
 useSelector(state => state.cart.items)
 
 /*
- * Правильно!
- * Мы используем уже объявленный селектор,
- * и при изменениях в сторе нам ничего не придется здесь переписывать
+ * Good.
+ * 1) We use already declared selector.
+ * 2) If some path changes, we will only need to update the selector
  */
 useSelector(cartSelectors.items)
 ```
 
-## Виды селекторов {#selector-types}
+## Selector types {#selector-types}
 
-- Мемоизированные селекторы, созданные через `createSelector` из `reselect`
-- Селекторы без мемоизации, в которых мы ручками принимаем `state` и возвращаем нужные данные
+- Memoized selectors, created using `createSelector` function from `reselect`
+- Not memoized selectors (it's just a simple function)
 
-### Мемоизированные {#memoized-selectors}
+### Memoized {#memoized-selectors}
 
-По примеру из репозитория `reselect` может сложиться неправильное понимание того, как селекторы стоит использовать.
+The example from `reselect` repository can give us a wrong understanding of how and where memoized selectors should be used.
 
-Многие, только ознакомившись с этой библиотекой, принимаются абсолютно каждый селектор создавать через `createSelector`. Такой подход конечно же неправильный, и мемоизированные селекторы полезны не во всех случаях.
+After seeing this library in the first time, a lot of people start using `createSelector` literally everywhere. Of course, this is the wrong approach. Memoized selectors are good only in some situations.
 
-Вот основные ситуации для их применения.
+Here are the main cases for using them:
 
-#### Тяжелые вычисления {#heavy-computations}
+#### Heavy computations {#heavy-computations}
 
 ```js
-// только оплаченные элементы
+// only paid items
 const paidItems = createSelector(
   items,
   items => items.filter(filters.onlyPaid)
 )
 
-// только оплаченная сумма
+// only paid amount
 const paidAmount = createSelector(
   paidItems,
   items => items.reduce(reducers.total, 0)
 )
 
-// общая сумма покупок
+// total purchase amount
 const totalAmount = createSelector(
   items,
   items => items.reduce(reducers.total, 0)
 )
 ```
 
-Нам не нужно заново рассчитывать что-либо, если входные параметры не изменились.
-  
-Любое изменение стейта заставляет все `mapStateToProps` и `useSelector` выполниться. В случае, если мы будем использовать не мемоизированную функцию, все тяжелые вычисления в селекторах будут произведены заново, вне зависимости от того, были ли входные данные селекторов задеты изменением в стейте.
+We don't need to re-calculate a value until the input data have changed.
 
-А это означает, что если покупатель откроет/закроет какую-нибудь глобальную модалку, состояние которой лежит в редакс сторе, сумма покупок рассчитается заново, не смотря на то, что состояние модалок не имеет никакого отношения к корзине покупок.
+Any state change leads to every `mapStateToProps` and `useSelector` to being executed. And if we use not memoized function for selector, all heavy computations will be re-computed every time, no matter whether their input data was changed or not.
 
-#### Преобразование данных и композиция {#data-mapping-and-composition}
+It means, for example, when user opens/closes some global modal, which state lies in redux store, we will re-calculate all the values coming from not memoized selectors, even if the shopping card is not relying on this modal at all.
+
+#### Data mapping and composition {#data-mapping-and-composition}
 
 ```js
 const loadingState = createSelector(
@@ -147,15 +151,15 @@ const loadingState = createSelector(
 )
 ```
 
-Хоть данный селектор и не производит тяжелых вычислений, но он возвращает объект.
+This selector aren't doing any heavy computations, but it returns an object.
 
-Если не выполнять мемоизацию, при каждом вызове такой селектор будет возвращать новый объект, в том числе когда все входные данные остались прежними. `mapStateToProps` и `useSelector` при неглубоком сравнении посчитают, что данные изменились, и компонент будет перерендерен.
+Without memoization, on each call it will return the new object, even when input data is remained the same. `mapStateToProps` and `useSelector` will count it as data change and component will re-render.
 
-Мемоизированный же селектор будет возвращать ссылку на старый объект, если входные данные не изменились, соответственно лишних ререндеров не будет.
+Memoized selector, on the other hand, will return the same reference all the time, until the input data have changed. So, there will be not extra re-renders.
 
-Все это относится к любым значениям, имеющим ссылочный тип данных (массивы, инстансы `Date`, `Map`, `Set` и т.д.). Для простоты представителем подобных значений дальше будет выступать объект.
+This can be applied for any values which are object technically (arrays, instances of `Date`, `Map`, `Set`, and so on). We will call it just an "object" for simplicity.
 
-Возможен и другой случай:
+There can be another case:
 
 ```js
 const somePrimitive = createSelector(
@@ -168,9 +172,7 @@ const somePrimitive = createSelector(
 )
 ```
 
-Этот селектор возвращает примитивное значение и не делает никаких тяжелых расчетов. Так что с точки зрения оптимизации нам не нужно здесь использовать `createSelector`. Более того, мемоизированный селектор будет выполнять больше вычислений и занимать больше памяти (хоть и ненамного).
-
-А вот то же самое обычным селектором:
+This selector returns a primitive value and doesn't do any heavy computations. So, from optimization point of view, we don't need to use `createSelector` here. Moreover, it will take more memory and will do more work than just a simple function:
 
 ```js
 const somePrimitive = state => {
@@ -178,11 +180,11 @@ const somePrimitive = state => {
 }
 ```
 
-К сожалению, такой селектор не так чисто выглядит и при увеличении зависимостей начинает расти в ширину, а не в высоту, поэтому быстро приходит в нечитабельное состояние. А если попытаться исправить это, мы столкнемся с конфликтами между именами селекторов и переменных.
+Sadly, this doesn't look so good and simple.
 
-В таких случаях я отдаю предпочтение версии c `createSelector`, хоть она и уступает по производительности. В контексте всего приложения разница будет несущественная.
+In situations like this, I prefer using `createSelector` version, even while it's not so fast and takes some memory. It's just not a big problem in context of entire application.
 
-### Обычные (без мемоизации) {#not-memoized-selectors}
+### Simple (not memoized) {#not-memoized-selectors}
 
 ```js
 const everything = state => state.cart
@@ -191,50 +193,36 @@ const items = state => everything(state).items
 
 const calculation = state => everything(state).calculation
 
-// композировать тоже можно
 const bonuses = state => calculation(state).bonuses
 ```
 
-Такие селекторы стоит использовать всегда, когда мы напрямую ссылаемся на данные из стора.
+Use it if you need to get some data directly from the store, without any calculations or composition.
 
-Даже если возвращаемое значение является объектом, не стоит беспокоиться - мы лишь возвращаем ссылку на уже существующий объект, который находится в стейте, так что ни к каким проблемам это не приведет.
+Don't worry even if return type is object - you will just get the reference to already existing object, which is located in the store. It won't lead to any problem.
 
-Мемоизированные селекторы в подобных случаях использовать не стоит -- из-за проверки входных данных и сравнения их с предыдущими, такие селекторы будут медленнее (~ в 30 раз), а обьем занимаемой памяти увеличится, так как предыдущие входные данные нужно где-то хранить. Проблема с памятью не очень заметна, но становится вполне ощутима, когда входными данными является обьект с кучей данных.
+Memoized selectors are not good in cases like this. First, they are about 30 times slower. And second, they are need some memory for storing previous computations data. Those problems are not so visible, but they can become if you use it everywhere.
 
-## Немного о useSelector {#use-selector-in-details}
+## useSelector in details {#use-selector-in-details}
 
-Может показаться, что `useSelector` позволяет не использовать мемоизированные селекторы, но это не так.
+It may seem that `useSelector` is allowing us to not using memoized selectors, but it is not.
 
-Первая причина - функция, переданная внутрь, выполняется при каждом изменении в сторе. Это означает, что различные тяжелые вычисления будут в любом случае выполнены, не важно изменилась ли вообще часть данных стейта, с которой функция работает. В отличие от мемоизированных селекторов, `useSelector` не может сравнить входящие аргументы функции (в данном случае он всего один - state, который и не выйдет сравнить без глубокого сравнения).
+The first reason - function passed into it is executed for every change in the store. It means that every heavy computation will re-calculate, no matter what slice of the state was changed. `useSelector` has no way to compare the input data, since it just taking the function with single parameter `state`.
 
-Вторая причина - нельзя отказываться от удобной возможности для композиции селекторов. Как уже обсуждалось [здесь](#data-mapping-and-composition), без `reselect` такое не сделать без боли (либо понадобится писать свой хелпер).
+The second - it would be a bad idea to throw out a composition (that was described [there](#data-mapping-and-composition)). We can't do the same without `reselect`, or we will have to write the own helper.
 
-Чтобы предотвратить ререндер, если не изменился результат селектора, `useSelector`, так же как и `connect`, сравнивает результаты текущего и прошлого выполнения функции (в случае с `connect` этой функцией является `mapStateToProps`). Отличие в том, что по дефолту `useSelector` производит простое сравнение с помощью `===`, а `connect` выполняет `shallowCompare` (поверхностное сравнение, при котором сравниваются не сами обьекты, а их содержимое). При использовании `useSelector` подобное можно сделать с помощью 2 аргумента, которым можно передать свою функцию для сравнения, в том числе и `shallowCompare`.
+To prevent the re-render when selector's result remained the same, `useSelector` compares the results of current and previous calls of the function (just like `connect` works with `mapStateToProps`).
 
-Причина, по которой так сделано - атомарный подход при использовании хуков. Так же, как и в случае с `this.state` и хуком `useState`, вместо создания одного большого обьекта мы несколько раз вызываем хуки, ответственные за определенную часть данных. Поэтому `shallowCompare` изначально и не требуется.
+It uses `===` for comparison, so in case of objects - it won't work and component will be re-rendered. And in case of primitives it still will do the computations, but without re-render.
 
-```js
-// здесь просто сравнить не выйдет
-// объект каждый раз новый, так что надо проверять содержимое
-const mapStateToProps = state => ({
-  one: selectors.one(state),
-  two: selectors.two(state),
-})
-
-// а здесь для результатов можно использовать простое сравнение
-const one = useSelector(selectors.one)
-const two = useSelector(selectors.two)
-```
-
-То есть, при работе с `useSelector`, крайне нежелательно делать так:
+Therefore, it's not a good idea to "replace" `reselect` with `useSelector`:
 
 ```js
 /*
- * При совершенно любом изменении state, данный селектор будет вызван
- * А так как он каждый раз возвращает новый объект, наш компонент будет всегда ререндериться
- * Проблему можно решить с помощью передачи shallowCompare 2 аргументом, но это лишь костыль
- * Правильное решение - разбиение на несколько вызовов useSelector: первый получает one, второй two
- * (селектор написан прямо в компоненте только ради наглядности, не стоит так делать)
+ * Selector function will be called on any change in store's state.
+ * And our component will re-render every time, since the function returns an object.
+ * We can solve the problem if we pass shallowCompare as a second argument, but it's just a kludge.
+ * The good solution is to divide it into two calls of useSelector (1st for one, 2nd for two)
+ * (it's just an example, don't declare selector functions directly in component)
  */
 useSelector(state => ({
   one: state.one,
@@ -242,19 +230,19 @@ useSelector(state => ({
 }))
 ```
 
-## Заключение {#conclusion}
+## A conclusion {#conclusion}
 
-**Нужно соблюдать основные правила:**
+**Follow the main rules:**
 
-- Объявлять селекторы всего 1 раз (например на уровне модуля) и далее их использовать в остальных участках приложения.
-- Не рассчитывать на `useSelector` в плане оптимизаций. Он лишь предотвращает ререндер, если сравнение результата через `===` вернуло `true`.
+- Declare selectors only once (on a module level for example) and use it in other parts of your app.
+- Doesn't count on `useSelector` in terms of optimization. It just prevents the re-rendering when `===` comparison between current and previous results returned `true`.
 
-**Надо использовать обычные селекторы без мемоизации когда:**
+**Use simple selectors without memoization when:**
 
-- Нужно просто достать значение из стора
-- *(не обязательно)* Нужно сделать простую операцию над каким-то значением, при этом результатом этой операции является примитив
+- You want to get the value from the store, without modifying it.
+- *(optional)* You need to apply a simple operation to some value, and the result of this operation has a primitive type.
 
-**Надо использовать мемоизированные селекторы когда:**
+**Use memoized selectors when:**
 
-- В селекторе есть тяжелые вычисления (сумма покупок, фильтрация, преобразование данных и так далее)
-- Результатом вызова селектора является значение с ссылочным типом данных
+- Selector contains heavy computations.
+- Selector returns a new object every time.

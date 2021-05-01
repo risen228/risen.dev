@@ -20,39 +20,46 @@ const BlogIndex = ({ data, location }) => {
     <MainTemplate location={location} title={siteTitle}>
       <Seo title="Все посты" />
       <Bio />
-      {posts.map(({ node }) => {
-        const {
-          excerpt,
-          fields: { slug },
-          frontmatter: { date, title, description },
-        } = node
+      {posts
+        .filter(({ node }) => {
+          return node.fields.langKey === 'en'
+        })
+        .map(({ node }) => {
+          const {
+            excerpt,
+            fields: { slug, langKey },
+            frontmatter: { date, title, description },
+          } = node
 
-        return (
-          <article key={slug}>
-            <header>
-              <h3
-                style={{
-                  fontFamily: 'Montserrat, sans-serif',
-                  fontWeight: 700,
-                  marginBottom: rhythm(0.25),
-                }}
-              >
-                <Link style={{ boxShadow: 'none' }} to={toPostUrl(slug)}>
-                  {title}
-                </Link>
-              </h3>
-              <small>{fullDate(date)}</small>
-            </header>
-            <section>
-              <p
-                dangerouslySetInnerHTML={{
-                  __html: description || excerpt,
-                }}
-              />
-            </section>
-          </article>
-        )
-      })}
+          return (
+            <article key={slug}>
+              <header>
+                <h3
+                  style={{
+                    fontFamily: 'Montserrat, sans-serif',
+                    fontWeight: 700,
+                    marginBottom: rhythm(0.25),
+                  }}
+                >
+                  <Link
+                    style={{ boxShadow: 'none' }}
+                    to={toPostUrl(slug, langKey)}
+                  >
+                    {title}
+                  </Link>
+                </h3>
+                <small>{fullDate(date)}</small>
+              </header>
+              <section>
+                <p
+                  dangerouslySetInnerHTML={{
+                    __html: description || excerpt,
+                  }}
+                />
+              </section>
+            </article>
+          )
+        })}
     </MainTemplate>
   )
 }
@@ -70,6 +77,7 @@ export const pageQuery = graphql`
           excerpt
           fields {
             slug
+            langKey
           }
           frontmatter {
             date

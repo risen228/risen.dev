@@ -65,7 +65,7 @@ const Navigation = ({ next, previous }) => {
           >
             <Link
               className="link-hover __right"
-              to={toPostUrl(previous.fields.slug)}
+              to={toPostUrl(previous.fields.slug, previous.fields.langKey)}
               rel="prev"
             >
               ← {previous.frontmatter.title}
@@ -83,7 +83,7 @@ const Navigation = ({ next, previous }) => {
           >
             <Link
               className="link-hover __left"
-              to={toPostUrl(next.fields.slug)}
+              to={toPostUrl(next.fields.slug, next.fields.langKey)}
               rel="next"
             >
               {next.frontmatter.title} →
@@ -134,10 +134,15 @@ const Footer = ({ siteTitle, next, previous, disqusConfig }) => {
   )
 }
 
+const Translations = ({ langKey, translations }) => {
+  console.log(langKey, translations)
+  return null
+}
+
 const BlogPost = ({ data, location, pageContext }) => {
   const {
     site: {
-      siteMetadata: { title: siteTitle, siteUrl },
+      siteMetadata: { title: siteTitle, siteUrl, langKey },
     },
     markdownRemark: {
       id,
@@ -147,7 +152,9 @@ const BlogPost = ({ data, location, pageContext }) => {
     },
   } = data
 
-  const { previous, next } = pageContext
+  const { previous, next, translations } = pageContext
+
+  console.log(previous, next)
 
   const disqusConfig = {
     url: siteUrl + location.pathname,
@@ -160,6 +167,7 @@ const BlogPost = ({ data, location, pageContext }) => {
       <Seo title={postTitle} description={description || excerpt} />
       <article>
         <Header postTitle={postTitle} date={date} />
+        <Translations langKey={langKey} translations={translations} />
         <PostText postHtml={postHtml} />
         <Footer
           siteTitle={siteTitle}

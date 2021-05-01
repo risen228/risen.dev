@@ -1,5 +1,13 @@
+const _ = require('lodash')
+
 const path = require(`path`)
 const { createFilePath } = require(`gatsby-source-filesystem`)
+
+function getSlug({ slug: path }) {
+  const segments = path.split('/')
+  const slug = segments[segments.length - 2]
+  return `/${slug}/`
+}
 
 exports.createPages = async ({ graphql, actions }) => {
   const { createPage } = actions
@@ -17,6 +25,7 @@ exports.createPages = async ({ graphql, actions }) => {
             node {
               fields {
                 slug
+                langKey
               }
               frontmatter {
                 title
@@ -32,29 +41,63 @@ exports.createPages = async ({ graphql, actions }) => {
     throw result.errors
   }
 
-  const {
-    allMarkdownRemark: { edges: posts },
-  } = result.data
+  // Create blog posts pages.
+  const allPosts = result.data.allMarkdownRemark.edges
 
-  posts.forEach((post, index) => {
+  const prevBySlug = {}
+  const nextBySlug = {}
+
+  const defaultLangPosts = allPosts.filter(
+    ({ node }) => node.fields.langKey === 'en'
+  )
+
+  const otherLangPosts = allPosts.filter(
+    ({ node }) => node.fields.langKey !== 'en'
+  )
+
+  const translationsBySlug = otherLangPosts.reduce((acc, post) => {
+    const { langKey } = post.node.fields
+    const slug = getSlug(post.node.fields)
+    const current = acc[slug] ?? []
+    return current.concat(langKey)
+  }, {})
+
+  _.each(defaultLangPosts, (post, index, posts) => {
     const previous = index === posts.length - 1 ? null : posts[index + 1].node
     const next = index === 0 ? null : posts[index - 1].node
 
-    const {
-      node: {
-        fields: { slug },
-      },
-    } = post
+    const { langKey } = post.node.fields
+    const slug = getSlug(post.node.fields)
 
-    const path = '/posts' + slug
+    prevBySlug[slug] = previous
+    nextBySlug[slug] = next
 
     createPage({
-      path,
+      path: '/posts' + slug,
       component: BlogPost,
       context: {
         slug,
         previous,
         next,
+        langKey,
+        translations: translationsBySlug[slug],
+      },
+    })
+  })
+
+  _.each(otherLangPosts, post => {
+    const { langKey } = post.node.fields
+    const slug = getSlug(post.node.fields)
+
+    createPage({
+      path: '/' + langKey + '/posts' + slug,
+      component: BlogPost,
+      context: {
+        slug: '/' + langKey + slug,
+        previous: prevBySlug[slug],
+        next: nextBySlug[slug],
+        langKey,
+        translations: translationsBySlug[slug],
       },
     })
   })
@@ -63,7 +106,10 @@ exports.createPages = async ({ graphql, actions }) => {
 exports.onCreateNode = ({ node, actions, getNode }) => {
   const { createNodeField } = actions
 
-  if (node.internal.type === `MarkdownRemark`) {
+  if (
+    node.internal.type === `MarkdownRemark` &&
+    node.internal.fieldOwners.slug !== 'gatsby-plugin-i18n'
+  ) {
     const value = createFilePath({ node, getNode })
 
     createNodeField({

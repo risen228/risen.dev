@@ -119,5 +119,13 @@ module.exports = {
         shortname: 'risen-dev',
       },
     },
+    {
+      resolve: 'gatsby-plugin-i18n',
+      options: {
+        langKeyDefault: 'en',
+        useLangKeyLayout: false,
+        pagesPaths: [`${__dirname}/content/blog`],
+      },
+    },
   ],
 }
