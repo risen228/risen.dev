@@ -58,7 +58,7 @@ exports.createPages = async ({ graphql, actions }) => {
   const translationsBySlug = otherLangPosts.reduce((acc, post) => {
     const { langKey } = post.node.fields
     const slug = getSlug(post.node.fields)
-    const current = acc[slug] ?? []
+    const current = acc[slug] || []
     return current.concat(langKey)
   }, {})
 
