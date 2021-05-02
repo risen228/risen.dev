@@ -3,7 +3,7 @@ module.exports = {
     title: 'Risen.dev',
     author: 'risenforces',
     description:
-      'Очередной блог о веб-разработке. Стараюсь сделать ваш код лучше.',
+      'Just an ordinary web-development blog. Trying to make your code better.',
     siteUrl: 'https://risen.dev',
     social: {
       github: 'risenforces',

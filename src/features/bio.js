@@ -82,8 +82,8 @@ export const Bio = () => {
       />
       <Description
         lines={[
-          'Очередной блог о веб-разработке.',
-          'Стараюсь сделать ваш код лучше.',
+          'Just an ordinary web-development blog.',
+          'Trying to make your code better.',
         ]}
         social={social}
       />
