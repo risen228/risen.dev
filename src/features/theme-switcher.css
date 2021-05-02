@@ -12,6 +12,9 @@
   --quote-color: hsla(0, 0%, 0%, 0.5);
   --quote-border: hsla(0, 0%, 0%, 0.75);
   --code-bg: #011627;
+  --translations-bg: #011627;
+  --translations-color: hsl(0deg 0% 100% / 65%);
+  --translations-link-color: #b989d2;
 }
 
 :root.dark-theme {
@@ -28,6 +31,9 @@
   --quote-color: hsl(0deg 0% 100% / 50%);
   --quote-border: hsl(0deg 0% 100% / 75%);
   --code-bg: #131313;
+  --translations-bg: #131313;
+  --translations-color: hsl(0deg 0% 100% / 65%);
+  --translations-link-color: #a173b9;
 }
 
 .theme-switcher {

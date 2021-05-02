@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Link, graphql } from 'gatsby'
-import { Disqus } from 'gatsby-plugin-disqus'
 import { rhythm, scale } from '../utils/typography'
 import { fullDate } from '../utils/dates'
 import { toPostUrl } from '../utils/post-url'
 import { PostTemplate } from '../templates'
+import { normalizeSlug } from '../utils/slug'
+import { useThemeStore } from '../stores/theme'
 import { Seo } from './seo'
 import { Bio } from './bio'
 
@@ -95,13 +96,33 @@ const Navigation = ({ next, previous }) => {
   )
 }
 
-const WrappedDisqus = ({ config }) => {
-  if (process.env.GATSBY_DISABLE_DISQUS === 'true') return null
+const Comments = ({ slug }) => {
+  const [theme] = useThemeStore()
 
-  return <Disqus config={config} />
+  const commentBox = useRef()
+
+  useEffect(() => {
+    if (!commentBox.current) return
+
+    const container = commentBox.current
+    container.innerHTML = ''
+
+    const script = document.createElement('script')
+    script.async = true
+    script.src = 'https://utteranc.es/client.js'
+    script.setAttribute('repo', 'risenforces/risen.dev-comments')
+    script.setAttribute('issue-term', slug)
+    script.setAttribute('id', 'utterances')
+    script.setAttribute('theme', `github-${theme}`)
+    script.setAttribute('crossorigin', 'anonymous')
+
+    container.appendChild(script)
+  }, [slug, theme])
+
+  return <div ref={commentBox} />
 }
 
-const Footer = ({ siteTitle, next, previous, disqusConfig }) => {
+const Footer = ({ siteTitle, next, previous, slug, langKey }) => {
   return (
     <footer style={{ marginTop: rhythm(3), marginBottom: rhythm(3) }}>
       <Navigation next={next} previous={previous} />
@@ -129,49 +150,95 @@ const Footer = ({ siteTitle, next, previous, disqusConfig }) => {
         <Bio />
       </div>
 
-      <WrappedDisqus config={disqusConfig} />
+      <Comments slug={slug} langKey={langKey} />
     </footer>
   )
 }
 
-const Translations = ({ langKey, translations }) => {
-  console.log(langKey, translations)
-  return null
+const TranslationsBlock = ({ children }) => (
+  <div
+    style={{
+      fontSize: 14,
+      padding: '1rem',
+      borderRadius: 10,
+      color: 'var(--translations-color)',
+      backgroundColor: 'var(--translations-bg)',
+      marginBottom: '2rem',
+    }}
+  >
+    {children}
+  </div>
+)
+
+const languageLabels = {
+  en: 'English',
+  ru: 'Русский',
 }
 
-const BlogPost = ({ data, location, pageContext }) => {
+const Translations = ({ slug, langKey, translations }) => {
+  if (langKey !== 'en') {
+    return (
+      <TranslationsBlock>
+        <a
+          href={`/posts${slug}`}
+          style={{ color: 'var(--translations-link-color)' }}
+        >
+          Read in original (English)
+        </a>
+      </TranslationsBlock>
+    )
+  }
+
+  const links = translations.map((lang, index) => {
+    return (
+      <React.Fragment key={lang}>
+        <a
+          href={`/${lang}/posts${slug}`}
+          style={{ color: 'var(--translations-link-color)' }}
+        >
+          {languageLabels[lang]}
+        </a>
+        {index < translations.length - 1 ? ', ' : ''}
+      </React.Fragment>
+    )
+  })
+
+  return <TranslationsBlock>Translated in: {links}</TranslationsBlock>
+}
+
+const BlogPost = ({ data, pageContext }) => {
   const {
     site: {
-      siteMetadata: { title: siteTitle, siteUrl, langKey },
+      siteMetadata: { title: siteTitle },
     },
     markdownRemark: {
-      id,
       excerpt,
       html: postHtml,
+      fields: { slug, langKey },
       frontmatter: { title: postTitle, date, description },
     },
   } = data
 
+  const normalizedSlug = normalizeSlug(slug)
   const { previous, next, translations } = pageContext
-
-  const disqusConfig = {
-    url: siteUrl + location.pathname,
-    identifier: id,
-    title: postTitle,
-  }
 
   return (
     <PostTemplate title={siteTitle}>
       <Seo title={postTitle} description={description || excerpt} />
       <article>
         <Header postTitle={postTitle} date={date} />
-        <Translations langKey={langKey} translations={translations} />
+        <Translations
+          slug={normalizedSlug}
+          langKey={langKey}
+          translations={translations}
+        />
         <PostText postHtml={postHtml} />
         <Footer
           siteTitle={siteTitle}
           next={next}
           previous={previous}
-          disqusConfig={disqusConfig}
+          slug={normalizedSlug}
+          langKey={langKey}
         />
       </article>
     </PostTemplate>
@@ -190,6 +257,10 @@ export const pageQuery = graphql`
       id
       excerpt(pruneLength: 160)
       html
+      fields {
+        slug
+        langKey
+      }
       frontmatter {
         title
         date

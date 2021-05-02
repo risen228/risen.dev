@@ -1,5 +1,6 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 import clsx from 'clsx'
+import { useThemeStore } from '../stores/theme'
 
 function getSystemColorScheme() {
   if (!window.matchMedia) return 'light'
@@ -21,22 +22,10 @@ function getCurrentTheme(themeChoice, systemTheme) {
   return themeChoice
 }
 
-export const ThemeSwitcher = () => {
-  if (typeof window === 'undefined') return null
-  return <ThemeSwitcherInner />
-}
-
-const ThemeSwitcherInner = () => {
+function useSystemTheme() {
   const [systemTheme, setSystemTheme] = useState(() => {
     return getSystemColorScheme()
   })
-  const [themeChoice, setThemeChoice] = useState(() => {
-    return getSavedThemeChoice()
-  })
-
-  useLayoutEffect(() => {
-    document.documentElement.style.backgroundColor = ''
-  }, [])
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-color-scheme: dark)')
@@ -50,19 +39,48 @@ const ThemeSwitcherInner = () => {
     return () => media.removeEventListener('change', listener)
   }, [])
 
+  return systemTheme
+}
+
+function useThemeChoice() {
+  const [themeChoice, setThemeChoice] = useState(() => {
+    return getSavedThemeChoice()
+  })
+
   useEffect(() => {
     localStorage.setItem('ui/theme', themeChoice)
   }, [themeChoice])
 
+  return [themeChoice, setThemeChoice]
+}
+
+export const ThemeSwitcher = () => {
+  if (typeof window === 'undefined') return null
+  return <ThemeSwitcherInner />
+}
+
+const ThemeSwitcherInner = () => {
+  const systemTheme = useSystemTheme()
+  const [themeChoice, setThemeChoice] = useThemeChoice()
+  const [finalTheme, setFinalTheme] = useThemeStore()
+
+  useLayoutEffect(() => {
+    document.documentElement.style.backgroundColor = ''
+  }, [])
+
   useEffect(() => {
     const finalTheme = getCurrentTheme(themeChoice, systemTheme)
+    setFinalTheme(finalTheme)
+  }, [themeChoice, systemTheme, setFinalTheme])
+
+  useEffect(() => {
     const { classList } = document.documentElement
 
     const possibleClasses = ['light-theme', 'dark-theme']
     possibleClasses.forEach(className => classList.remove(className))
 
     classList.add(`${finalTheme}-theme`)
-  }, [themeChoice, systemTheme])
+  }, [finalTheme])
 
   const classesByTheme = theme => {
     return clsx({

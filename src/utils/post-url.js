@@ -1,8 +1,4 @@
-function normalizeSlug(slug) {
-  const segments = slug.split('/')
-  const normalized = segments[segments.length - 2]
-  return `/${normalized}/`
-}
+import { normalizeSlug } from './slug'
 
 export function toPostUrl(slug, langKey) {
   const normalized = normalizeSlug(slug)

@@ -59,7 +59,8 @@ exports.createPages = async ({ graphql, actions }) => {
     const { langKey } = post.node.fields
     const slug = getSlug(post.node.fields)
     const current = acc[slug] || []
-    return current.concat(langKey)
+    acc[slug] = current.concat(langKey)
+    return acc
   }, {})
 
   _.each(defaultLangPosts, (post, index, posts) => {
