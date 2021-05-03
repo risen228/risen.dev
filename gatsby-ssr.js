@@ -19,23 +19,24 @@ exports.onRenderBody = ({ setHeadComponents }) => {
           return record.replace(/"/g, '')
         }
       
-        function getCurrentTheme(themeChoice) {
+        function getCurrentTheme(themeChoice, systemTheme) {
           if (themeChoice === 'system') {
-            return getSystemColorScheme()
+            return systemTheme
           }
       
           return themeChoice
         }
       
         var themeChoice = getSavedThemeChoice()
-        var theme = getCurrentTheme(themeChoice)
+        var systemTheme = getSystemColorScheme()
+        var theme = getCurrentTheme(themeChoice, systemTheme)
       
         var colors = {
           light: '#fff',
           dark: '#000',
         }
       
-        document.documentElement.classList.add('light-theme')
+        document.documentElement.classList.add(theme + '-theme')
         document.documentElement.style.backgroundColor = colors[theme]
       `,
       }}
