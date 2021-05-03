@@ -6,10 +6,10 @@ import { toPostUrl } from '../utils/post-url'
 import { PostTemplate } from '../templates'
 import { normalizeSlug } from '../utils/slug'
 import { useThemeStore } from '../stores/theme'
-import { Seo } from './seo'
-import { Bio } from './bio'
+import { Seo } from '../features/seo'
+import { Bio } from '../features/bio'
 
-const Header = ({ postTitle, date }) => {
+const Header = ({ postTitle, date, langKey }) => {
   return (
     <header>
       <h1
@@ -27,7 +27,7 @@ const Header = ({ postTitle, date }) => {
           marginBottom: rhythm(1),
         }}
       >
-        {fullDate(date)}
+        {fullDate(date, langKey)}
       </p>
     </header>
   )
@@ -226,7 +226,7 @@ const BlogPost = ({ data, pageContext }) => {
     <PostTemplate title={siteTitle}>
       <Seo title={postTitle} description={description || excerpt} />
       <article>
-        <Header postTitle={postTitle} date={date} />
+        <Header postTitle={postTitle} date={date} langKey={langKey} />
         <Translations
           slug={normalizedSlug}
           langKey={langKey}

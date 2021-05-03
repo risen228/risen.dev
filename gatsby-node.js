@@ -12,7 +12,8 @@ function getSlug({ slug: path }) {
 exports.createPages = async ({ graphql, actions }) => {
   const { createPage } = actions
 
-  const BlogPost = path.resolve(`./src/features/blog-post.js`)
+  const BlogIndex = path.resolve(`./src/pages/index.js`)
+  const BlogPost = path.resolve(`./src/pages/blog-post.js`)
 
   const result = await graphql(
     `
@@ -40,6 +41,20 @@ exports.createPages = async ({ graphql, actions }) => {
   if (result.errors) {
     throw result.errors
   }
+
+  // Create index pages for other languages
+
+  const otherLanguages = ['ru']
+
+  _.each(otherLanguages, langKey => {
+    createPage({
+      path: '/' + langKey,
+      component: BlogIndex,
+      context: {
+        langKey,
+      },
+    })
+  })
 
   // Create blog posts pages.
   const allPosts = result.data.allMarkdownRemark.edges

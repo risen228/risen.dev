@@ -8,7 +8,7 @@ import { fullDate } from '../utils/dates'
 import { toPostUrl } from '../utils/post-url'
 import { MainTemplate } from '../templates'
 
-const BlogIndex = ({ data, location }) => {
+const BlogIndex = ({ data, location, pageContext }) => {
   const {
     site: {
       siteMetadata: { title: siteTitle },
@@ -16,18 +16,20 @@ const BlogIndex = ({ data, location }) => {
     allMarkdownRemark: { edges: posts },
   } = data
 
+  const { langKey = 'en' } = pageContext
+
   return (
     <MainTemplate location={location} title={siteTitle}>
       <Seo title="Все посты" />
       <Bio />
       {posts
         .filter(({ node }) => {
-          return node.fields.langKey === 'en'
+          return node.fields.langKey === langKey
         })
         .map(({ node }) => {
           const {
             excerpt,
-            fields: { slug, langKey },
+            fields: { slug },
             frontmatter: { date, title, description },
           } = node
 
@@ -48,7 +50,7 @@ const BlogIndex = ({ data, location }) => {
                     {title}
                   </Link>
                 </h3>
-                <small>{fullDate(date)}</small>
+                <small>{fullDate(date, langKey)}</small>
               </header>
               <section>
                 <p
