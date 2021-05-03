@@ -13,7 +13,7 @@ exports.createPages = async ({ graphql, actions }) => {
   const { createPage } = actions
 
   const BlogIndex = path.resolve(`./src/pages/index.js`)
-  const BlogPost = path.resolve(`./src/pages/blog-post.js`)
+  const BlogPost = path.resolve(`./src/manual-pages/blog-post.js`)
 
   const result = await graphql(
     `

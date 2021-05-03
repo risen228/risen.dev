@@ -177,6 +177,10 @@ const languageLabels = {
 
 const Translations = ({ slug, langKey, translations }) => {
   if (langKey !== 'en') {
+    if (!translations.includes('en')) {
+      return null
+    }
+
     return (
       <TranslationsBlock>
         <a
