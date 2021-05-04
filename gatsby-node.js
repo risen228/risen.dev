@@ -2,6 +2,7 @@ const _ = require('lodash')
 
 const path = require(`path`)
 const { createFilePath } = require(`gatsby-source-filesystem`)
+const { allLangKeys, defaultLangKey } = require('./i18n')
 
 function getSlug({ slug: path }) {
   const segments = path.split('/')
@@ -44,7 +45,7 @@ exports.createPages = async ({ graphql, actions }) => {
 
   // Create index pages for other languages
 
-  const otherLanguages = ['ru']
+  const otherLanguages = allLangKeys.filter(lang => lang !== defaultLangKey)
 
   _.each(otherLanguages, langKey => {
     createPage({
@@ -63,14 +64,14 @@ exports.createPages = async ({ graphql, actions }) => {
   const nextBySlug = {}
 
   const defaultLangPosts = allPosts.filter(
-    ({ node }) => node.fields.langKey === 'en'
+    ({ node }) => node.fields.langKey === defaultLangKey
   )
 
   const otherLangPosts = allPosts.filter(
-    ({ node }) => node.fields.langKey !== 'en'
+    ({ node }) => node.fields.langKey !== defaultLangKey
   )
 
-  const translationsBySlug = otherLangPosts.reduce((acc, post) => {
+  const translationsBySlug = allPosts.reduce((acc, post) => {
     const { langKey } = post.node.fields
     const slug = getSlug(post.node.fields)
     const current = acc[slug] || []

@@ -1,3 +1,5 @@
+const { defaultLangKey } = require('./i18n')
+
 module.exports = {
   siteMetadata: {
     title: 'Risen.dev',
@@ -122,7 +124,7 @@ module.exports = {
     {
       resolve: 'gatsby-plugin-i18n',
       options: {
-        langKeyDefault: 'en',
+        langKeyDefault: defaultLangKey,
         useLangKeyLayout: false,
         pagesPaths: [`${__dirname}/content/blog`],
       },

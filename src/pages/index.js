@@ -7,6 +7,7 @@ import { rhythm } from '../utils/typography'
 import { fullDate } from '../utils/dates'
 import { toPostUrl } from '../utils/post-url'
 import { MainTemplate } from '../templates'
+import { defaultLangKey, dictionary } from '../../i18n'
 
 const BlogIndex = ({ data, location, pageContext }) => {
   const {
@@ -16,11 +17,11 @@ const BlogIndex = ({ data, location, pageContext }) => {
     allMarkdownRemark: { edges: posts },
   } = data
 
-  const { langKey = 'en' } = pageContext
+  const { langKey = defaultLangKey } = pageContext
 
   return (
     <MainTemplate location={location} title={siteTitle}>
-      <Seo title="Все посты" />
+      <Seo title={dictionary.indexTitle[langKey]} lang={langKey} />
       <Bio />
       {posts
         .filter(({ node }) => {

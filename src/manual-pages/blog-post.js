@@ -8,6 +8,7 @@ import { normalizeSlug } from '../utils/slug'
 import { useThemeStore } from '../stores/theme'
 import { Seo } from '../features/seo'
 import { Bio } from '../features/bio'
+import { defaultLangKey, mapLangKeyToName } from '../../i18n'
 
 const Header = ({ postTitle, date, langKey }) => {
   return (
@@ -170,14 +171,9 @@ const TranslationsBlock = ({ children }) => (
   </div>
 )
 
-const languageLabels = {
-  en: 'English',
-  ru: 'Русский',
-}
-
 const Translations = ({ slug, langKey, translations }) => {
-  if (langKey !== 'en') {
-    if (!translations.includes('en')) {
+  if (langKey !== defaultLangKey) {
+    if (!translations.includes(defaultLangKey)) {
       return null
     }
 
@@ -187,25 +183,27 @@ const Translations = ({ slug, langKey, translations }) => {
           href={`/posts${slug}`}
           style={{ color: 'var(--translations-link-color)' }}
         >
-          Read in original (English)
+          Read in original ({mapLangKeyToName[defaultLangKey]})
         </a>
       </TranslationsBlock>
     )
   }
 
-  const links = translations.map((lang, index) => {
-    return (
-      <React.Fragment key={lang}>
-        <a
-          href={`/${lang}/posts${slug}`}
-          style={{ color: 'var(--translations-link-color)' }}
-        >
-          {languageLabels[lang]}
-        </a>
-        {index < translations.length - 1 ? ', ' : ''}
-      </React.Fragment>
-    )
-  })
+  const links = translations
+    .filter(lang => lang !== defaultLangKey)
+    .map((lang, index, otherLangs) => {
+      return (
+        <React.Fragment key={lang}>
+          <a
+            href={`/${lang}/posts${slug}`}
+            style={{ color: 'var(--translations-link-color)' }}
+          >
+            {mapLangKeyToName[lang]}
+          </a>
+          {index < otherLangs.length - 1 ? ', ' : ''}
+        </React.Fragment>
+      )
+    })
 
   return <TranslationsBlock>Translated in: {links}</TranslationsBlock>
 }
@@ -228,7 +226,11 @@ const BlogPost = ({ data, pageContext }) => {
 
   return (
     <PostTemplate title={siteTitle}>
-      <Seo title={postTitle} description={description || excerpt} />
+      <Seo
+        title={postTitle}
+        lang={langKey}
+        description={description || excerpt}
+      />
       <article>
         <Header postTitle={postTitle} date={date} langKey={langKey} />
         <Translations
