@@ -35,7 +35,7 @@ exports.onRenderBody = ({ setHeadComponents }) => {
           dark: '#000',
         }
       
-        document.documentElement.classList.add('light-theme')
+        document.documentElement.classList.add(theme + '-theme')
         document.documentElement.style.backgroundColor = colors[theme]
       `,
       }}
