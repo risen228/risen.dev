@@ -4,9 +4,9 @@ date: "2020-01-30T00:37:42.751Z"
 description: "The devil never looked so good."
 ---
 
-I've seen many times how people make common architectural mistakes using Redux. And even experienced people do it sometimes. Those mistakes push the application into a pit of despair, pain, and destruction.
+I've seen many times how people make common architectural mistakes using Redux. And even experienced people do it sometimes. These mistakes push the application into a pit of despair, pain, and destruction.
 
-The things I wrote in this post are the result of my long experience with Redux. So I hope those practices help you break the vicious circle of violence.
+The things I wrote in this post are the result of my long experience with Redux. So I hope these practices help you break the vicious circle of violence.
 
 ## So, what's the point? {#so-whats-the-point}
 
@@ -14,7 +14,7 @@ I will use "pure" Redux since it's easier to understand for everyone. There are 
 
 **Module** is the primary unit in this architecture. It can be global or local.
 
-The global ones are located near the store since they cannot be bound to a specific feature. The information about the current user, authentification, global application modals, and anything like those are the global modules.
+The global ones are located near the store since they cannot be bound to a specific feature. The information about the current user, authentification, global application modals, and anything like these are the global modules.
 
 The local modules are always located inside some feature. It can be a data slice for user profiles, notes, or tasks, for example.
 
@@ -132,7 +132,7 @@ Otherwise, there is a significant risk of getting a circular dependency.
 
 Let's connect a module to the component.
 
-In good ol' times, we used `connect` for those purposes. But now, after React team introduced hooks, this task has become a lot easier.
+In good ol' times, we used `connect` for these purposes. But now, after React team introduced hooks, this task has become a lot easier.
 
 Before we start, let's write a nice magic hook, `useActions`, that will get bound actions for us. I call it magic because, in one line, it allows us to do such a big boilerplate job and hide `dispatch` inside.
 

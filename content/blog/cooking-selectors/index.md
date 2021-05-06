@@ -199,7 +199,7 @@ Use it if you need to get some data directly from the store, without any calcula
 
 Don't worry; even if the return type is an object, you will get the reference to an already existing object, which is located in the store. It won't lead to any problems.
 
-Memoized selectors are not good in cases like this. First, they are about 30 times slower. And second, they need some memory for storing previous computations data. Those problems are not usually visible, but they may become such if you use memoized selectors everywhere.
+Memoized selectors are not good in cases like this. First, they are about 30 times slower. And second, they need some memory for storing previous computations data. These problems are not usually visible, but they may become such if you use memoized selectors everywhere.
 
 ## useSelector in details {#use-selector-in-details}
 
