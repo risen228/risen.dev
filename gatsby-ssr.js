@@ -1,4 +1,9 @@
 const React = require('react')
+const {
+  getSystemColorScheme,
+  getSavedThemeChoice,
+  getCurrentTheme,
+} = require('./src/utils/theme')
 
 exports.onRenderBody = ({ setHeadComponents }) => {
   const themeScript = (
@@ -7,28 +12,13 @@ exports.onRenderBody = ({ setHeadComponents }) => {
       type="text/javascript"
       dangerouslySetInnerHTML={{
         __html: `
-        function getSystemColorScheme() {
-          if (!window.matchMedia) return 'light'
-          var isDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-          return isDark ? 'dark' : 'light'
-        }
-      
-        function getSavedThemeChoice() {
-          var record = localStorage.getItem('ui/theme')
-          if (!record) return 'system'
-          return record.replace(/"/g, '')
-        }
-      
-        function getCurrentTheme(themeChoice) {
-          if (themeChoice === 'system') {
-            return getSystemColorScheme()
-          }
-      
-          return themeChoice
-        }
+        ${getSystemColorScheme}
+        ${getSavedThemeChoice}
+        ${getCurrentTheme}
       
         var themeChoice = getSavedThemeChoice()
-        var theme = getCurrentTheme(themeChoice)
+        var systemTheme = getSystemColorScheme()
+        var theme = getCurrentTheme(themeChoice, systemTheme)
       
         var colors = {
           light: '#fff',

@@ -7,8 +7,9 @@ import { rhythm } from '../utils/typography'
 import { fullDate } from '../utils/dates'
 import { toPostUrl } from '../utils/post-url'
 import { MainTemplate } from '../templates'
+import { defaultLangKey, dictionary } from '../../i18n'
 
-const BlogIndex = ({ data, location }) => {
+const BlogIndex = ({ data, location, pageContext }) => {
   const {
     site: {
       siteMetadata: { title: siteTitle },
@@ -16,43 +17,52 @@ const BlogIndex = ({ data, location }) => {
     allMarkdownRemark: { edges: posts },
   } = data
 
+  const { langKey = defaultLangKey } = pageContext
+
   return (
     <MainTemplate location={location} title={siteTitle}>
-      <Seo title="Все посты" />
+      <Seo title={dictionary.indexTitle[langKey]} lang={langKey} />
       <Bio />
-      {posts.map(({ node }) => {
-        const {
-          excerpt,
-          fields: { slug },
-          frontmatter: { date, title, description },
-        } = node
+      {posts
+        .filter(({ node }) => {
+          return node.fields.langKey === langKey
+        })
+        .map(({ node }) => {
+          const {
+            excerpt,
+            fields: { slug },
+            frontmatter: { date, title, description },
+          } = node
 
-        return (
-          <article key={slug}>
-            <header>
-              <h3
-                style={{
-                  fontFamily: 'Montserrat, sans-serif',
-                  fontWeight: 700,
-                  marginBottom: rhythm(0.25),
-                }}
-              >
-                <Link style={{ boxShadow: 'none' }} to={toPostUrl(slug)}>
-                  {title}
-                </Link>
-              </h3>
-              <small>{fullDate(date)}</small>
-            </header>
-            <section>
-              <p
-                dangerouslySetInnerHTML={{
-                  __html: description || excerpt,
-                }}
-              />
-            </section>
-          </article>
-        )
-      })}
+          return (
+            <article key={slug}>
+              <header>
+                <h3
+                  style={{
+                    fontFamily: 'Montserrat, sans-serif',
+                    fontWeight: 700,
+                    marginBottom: rhythm(0.25),
+                  }}
+                >
+                  <Link
+                    style={{ boxShadow: 'none' }}
+                    to={toPostUrl(slug, langKey)}
+                  >
+                    {title}
+                  </Link>
+                </h3>
+                <small>{fullDate(date, langKey)}</small>
+              </header>
+              <section>
+                <p
+                  dangerouslySetInnerHTML={{
+                    __html: description || excerpt,
+                  }}
+                />
+              </section>
+            </article>
+          )
+        })}
     </MainTemplate>
   )
 }
@@ -70,6 +80,7 @@ export const pageQuery = graphql`
           excerpt
           fields {
             slug
+            langKey
           }
           frontmatter {
             date

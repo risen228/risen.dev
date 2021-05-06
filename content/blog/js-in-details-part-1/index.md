@@ -1,67 +1,79 @@
 ---
-title: JS в деталях [Часть 1]
+title: JS in details [Part 1]
 date: "2021-04-30T12:40:18.374Z"
-description: "Самый обычный перевод спецификации"
+description: "Specification explained"
 ---
 
-## Навигация
+## Navigation {#navigation}
 
-- [Вступление](#вступление)
-- [Лексические окружения](#лексические-окружения)
-- [Контекст выполнения](#контекст-выполнения)
+- [Before we start](#before-we-start)
+- [Lexical environments](#lexical-environments)
+  - [Variables](#lexical-environments-variables)
+  - [Function outer lexical environment](#function-outer-lexical-environment)
+  - [Declaring/writing variables](#declaring-and-writing-variables)
+  - [Specification](#lexical-environments-spec)
+      - [Environment Record types](#environment-record-types)
+      - [Function outer lexical environment](#function-outer-lexical-environment-spec)
+      - [Variable states](#variable-states-spec)
+      - [Declaring variables](#declaring-variables-spec)
+      - [Reading variables](#reading-variables-spec)
+- [Execution Context](#execution-context)
+  - [Specification](#execution-context-spec)
 
-## Вступление
+## Before we start {#before-we-start}
 
-Изначально, я хотел также написать и про **Event Loop**, но для полноты информации нужно исследовать исходники движка Blink, что затруднительно и может занять довольно много времени. Поэтому, данная статья содержит только лексические окружения и контекст выполнения. Возможно, в будущем я напишу и про Event Loop.
+When I was writing this article, I also wanted to explain the **Event Loop**. But it will be long hours of exploring Blink engine sources, and I can't afford it now. So, in the first part, we only talk about lexical environments and execution contexts.
 
-## Лексические окружения
+## Lexical environments {#lexical-environments}
 
-Различные переменные нужно где-то хранить. Эту задачу выполняют лексические окружения.
+Variables need to be stored somewhere. Lexical environments carry out this task.
 
-Они - специальные объекты, которые создаются по мере выполнения программы: при заходе в тело функции или блок кода, при каждой новой итерации цикла for, и так далее.
+They are special objects created as the program executes: for the function body or code block, for every cycle iteration, and so on.
 
-При обьявлении новой переменной или чтении уже существующей, движок как раз обращается к лексическим окружениям.
+On variable reading/writing, the engine communicates with lexical environments.
 
-Давайте разберемся, как конкретно это происходит.
+Let's figure out how that is happening.
 
-Рассмотрим следующий код:
+### Variables {#lexical-environments-variables}
+
+Consider the following code:
 
 ```js
-/* 1 лексическое окружение */
+/* 1st lexical environment */
 
 const one = 1
 const bool = true
 
 if (bool) {
-  /* 2 лексическое окружение */
+  /* 2nd lexical environment */
   
   const two = 2
   
   if (one + two === 3) {
-    /* 3 лексическое окружение */
+    /* 3rd lexical environment */
 
     const three = 3
   }
 
   if (two - one === one) {
-    /* 4 лексическое окружение */
+    /* 4th lexical environment */
     
     const four = 4
   }
 }
 ```
 
-Вполне очевидно, что во 2 лексическом окружении, помимо переменной `two` у нас также есть доступ к `one` и `bool`, которые находятся в 1 лексическом окружении.
+It's clear that in the 2nd lexical environment, besides variable `two`, we also have access to `one` and `bool`, located in the 1st lexical environment.
 
-А в 3 и 4 лексических окружениях у нас так же есть доступ к 1 и 2. Но 3 и 4 не имеют доступа друг к другу: 3 не может прочитать переменную `four`, а 4 не может прочитать `three`.
+In 3rd and 4th lexical environments, we also have access to 1st and 2nd. But 3rd and 4th do not have access to each other: 3rd cannot read the variable `four`, and 4th cannot read `three`.
 
-Но почему? Как все это устроено под капотом?
+But why? How does it work under the hood?
 
-Дело в том, что у каждого лексического окружения (кроме глобального) есть "родитель" - другое лексическое окружение, в котором текущее было создано. Этого "родителя" также можно назвать внешним лексическим окружением.
+The reason is that every lexical environment (except for the global one) has a "parent" - another lexical environment in which the one was created. This "parent" may also be called an outer lexical environment.
 
-И каждое лексическое окружение хранит ссылку на своего "родителя". Таким образом, в совокупности, из множества лексических окружений образуется дерево. Вершиной этого дерева является глобальное лексическое окружение, которое создается для всего скрипта.
+Every lexical environment has a link to its "parent". Thereby, collectively, all the lexical environments form a tree structure. The root of this tree is the global lexical environment that was created before the script execution.
 
-Для кода выше дерево выглядит так:
+For the code from above, the tree looks like the following:
 
 ```
   1
@@ -71,190 +83,190 @@ if (bool) {
   3   4
 ```
 
-При обращении к переменной идет поиск вверх по дереву, начиная от текущего лексического окружения. Соседние ветки не могут быть задеты, поэтому их локальные переменные нам не доступны.
+When we read the variable, the engine searches it in the tree, starting from the current lexical environment and ending the root. This way, it cannot touch the neighbors, so we don't have access to their variables.
 
-Таким образом:
+So:
 
-- при обращении к переменным в 3 лексическом окружении, идет поиск в ветке `1 -> 2 -> 3`.
-- при обращении к переменным в 4 лексическом окружении, идет поиск в ветке `1 -> 2 -> 4`.
-- при обращении к переменным во 2 лексическом окружении, но не внутри 3 или 4, идет поиск в ветке `1 -> 2`.
+- when reading variables in the 3rd lexical environment, the engine searches them in branch `1 -> 2 -> 3`.
+- when reading variables in the 4th lexical environment, the engine searches them in branch `1 -> 2 -> 4`.
+- when reading variables in the 2nd lexical environment, the engine searches them in branch `1 -> 2`.
 
-Теперь случай посложнее:
+### Function's outer lexical environment {#function-outer-lexical-environment}
+
+Consider another situation:
 
 ```javascript
-/* 1 лексическое окружение */
+/* 1st lexical environment */
 
 const v = 1
 
 function A() {
-  /* 2 лексическое окружение */
+  /* 2nd lexical environment */
 
   console.log(v)
 }
 
 function B() {
-  /* 3 лексическое окружение */
+  /* 3rd lexical environment */
   
   const v = 2
   A()
 }
 ```
 
-Функция `A` вызвана в 3 лексическом окружении. Но значение `v` получает из 1, и в целом не имеет доступа к переменным из 3. Или представим ситуацию, что мы создали функцию в одном модуле, а потом импортировали и вызвали в другом. Не перестанет же она от этого иметь доступ к переменным, объявленным в модуле? Те, кто писал что-то на JS, понимают это на подсознательном уровне. Но почему так происходит?
+The function `A` is called in the 3rd lexical environment. But gets the value of `v` from the 1st and doesn't have access to variables of 3rd.
 
-Дело в том, что для функции внешним (родительским) лексическим окружением всегда является область, в которой она была объявлена. Место вызова никак на это не влияет.
+Or imagine we created the function in one module, then imported it in another and called it there. It will not lose access to variables declared in the first module, right? You would say "sure" without even thinking, but do you know why exactly it happens?
 
-Для хранения информации об этом у объекта функции есть специальное свойство `[[Environment]]`. При объявлении функции туда записывается ссылка на текущее лексическое окружение.
+The answer is simple: the outer (parent) lexical environment for a function is always the lexical environment where it was created. The place of execution doesn't affect this.
 
-При вызове этой функции значение свойства `[[Environment]]` записывается в поле "родителя" нового лексического окружения. Таким образом, если переменная не находится в функции, поиск продолжается в области, где она была объявлена.
+### Declaring/writing variables {#declaring-and-writing-variables}
 
-Теперь рассмотрим объявление переменных.
+`let` and `const` declarations are scoped to the block. So, they are always written to the current lexical environment.
 
-В случае с `let` и `const` все просто. Запись всегда происходит в текущее лексическое окружение, так как у них блочная область видимости.
+But `var` declarations are scoped to the function or the script in case of global level. Thereby, `var` "ignores" the regular code blocks and uses the nearest function/script lexical environment.
 
-Но с `var` происходит иначе. У них область видимости ограничена функцией, внутри которой они находится, или скриптом, если такой функции нет. Поэтому они игнорируют обычные блоки и устанавливаются в ближайшее в дереве лексическое окружение, созданное для функции, или же в глобальное лексическое окружение, если они были объявлены за пределами любых функций.
+Also, there is a function declaration - its scope depends on the mode. When `strict` - it's the nearest block's lexical environment; else - the closest function/script' lexical environment, just like for `var` statements.
 
-Еще есть function declaration - их область видимости зависит от режима. В `strict mode` у них блочная область видимости, иначе - такая же, как и у `var` - ограниченная функцией, в которой находится объявление, или скриптом.
+Technically, it's strongly related to Execution Context. If you want to know a more in-depth explanation, read ahead.
 
-Здесь могут появиться вопросы:
+### Specification {#lexical-environments-spec}
 
-- как определяется докуда "всплывать"? 
-- может идет поиск вверх по дереву? 
-- но как мы узнаем, какое лексическое окружение принадлежит блоку, а какое телу функции?
+Every lexical environment is an [Environment Record](https://tc39.es/ecma262/#sec-environment-records).
 
-Отвечая с последнего вопроса:
+Each Environment Record has some basic API for using it:
 
-- узнать для какой конструкции было создано лексическое окружение - возможно, но в данном случае это не нужно. Тем не менее, мы рассмотрим этот вопрос чуть подробнее ниже.
-- поиск по дереву для этого не производится.
-- информация о том куда "всплывать" имеется изначально. Но она хранится в контексте выполнения. Поэтому данный вопрос будет подробно рассмотрен в [главе о контексте выполнения](#контекст-выполнения).
+- `CreateMutableBinding(N)` and `CreateImmutableBinding(N)` - create a property named `N` (mutable/immutable).
+- `InitializeBinding(N, V)` - initialize a property named `N` and assign it a value `V`.
+- `SetMutableBinding(N, V)` - set the value `V` for a mutable property named `N`.
+- `HasBinding(N)` - check if the lexical environment has a property named `N`.
+- `GetBindingValue(N)` - get the value of a property named `N`.
+- `DeleteBinding(N)` - delete a property named `N`.
+- `HasThisBinding()` - check if the lexical environment has information about `this` binding. We'll learn more about it in the next parts.
+- `HasSuperBinding()` - check if the lexical environment has information about `super` binding.
+- `WithBaseObject()` - check if the lexical environment was created for the `with` statement. This method is not important for us.
 
-### Спецификация
+Also, each lexical environment has the internal field `[[OuterEnv]]`, which can be `null` or the reference to the outer lexical environment.
 
-Каждое лексическое окружение - это [Environment Record](https://tc39.es/ecma262/#sec-environment-records).
+#### Environment Record types {#environment-record-types}
 
-Все Environment Record имеют некоторое базовое API для взаимодействия с их содержимым:
+- Declarative Environment Record - a base type used for simple code blocks, switch/case constructions, cycle iterations, etc.
 
-- `CreateMutableBinding(N)` и `CreateImmutableBinding(N)` - создать свойство с именем `N` (мутабельное/иммутабельное)
-- `InitializeBinding(N, V)` - инициализировать свойство с именем `N` и просвоить ему значение `V`
-- `SetMutableBinding(N, V)` - установить значение `V` мутабельному свойству `N`
-- `HasBinding(N)` - проверить, содержится ли в лексическом окружении свойство с именем `N`
-- `GetBindingValue(N)` - получить значение свойства с именем `N`
-- `DeleteBinding(N)` - удалить свойство с именем `N`
-- `HasThisBinding()` - содержит ли лексическое окружение данные о `this`. Это будет рассмотрено в дальнейших главах.
-- `HasSuperBinding()` - содержит ли лексическое окружение данные о `super`. Это будет рассмотрено в дальнейших главах.
-- `WithBaseObject()` - связано с использованием конструкции `with`. Мы не будем углубляться в эту информацию.
+- Function Environment Record - a subclass of Declarative Environment Record, used for functions' lexical environments.
 
-Также внутри содержится поле `[[OuterEnv]]`, равное либо `null`, либо ссылке на внешнее лексическое окружение.
+  It also has the following fields:
 
-#### Виды Environment Record
+  - `[[ThisValue]]` - `this` value. It is stored right here.
 
-- Declarative Environment Record - базовый тип, используется для простых блоков кода, для конструкции switch/case, для итераций цикла for, и так далее.
+  - `[[ThisBindingStatus]]` - `this` binding status. The value can be `lexical` / `uninitialized` / `initialized`. 
 
-- Function Environment Record - подкласс Declarative Environment Record, использующийся для верхнего лексического окружения функции.
+    - `lexical` - `this` value is taken from the outer lexical environment (arrow functions).
+    - `uninitialized` - `this` value is not set yet. It can be, for example, on the stage of creating context.
+    - `initialized` - `this` is set.
 
-  Помимо обычных свойств также содержит:
+  - `[[FunctionObject]]` - the function object whose invocation caused this Environment Record to be created.
 
-  - `[[ThisValue]]` - значение `this`. Оно хранится именно тут.
+  - `[[NewTarget]]` - a constructor function. We don't need this information.
 
-  - `[[ThisBindingStatus]]` - статус привязки `this`. Может иметь 3 значения: `lexical` / `uninitialized` / `initialized`. 
+- Module Environment Record - a subclass of Declarative Environment Record, used for modules' lexical environments.
 
-    - `lexical` - означает, что `this` берется из внешнего лексического окружения. Именно такое значение устанавливается для лексических окружений стрелочных функций.
-    - `uninitialized` - означает, что `this` еще не установлен. Такое может быть на этапе создания контекста выполнения функции.
-    - `initialized` - `this` установлен.
+  It also has the following fields:
 
-  - `[[FunctionObject]]` - функция, чье выполнение инициировало создание данного лексического окружения.
+  - `CreateImportBinding(N, M, N2)` - create an immutable indirect binding in a module Environment Record to property `N2` from module `M`. For the current module, it will have the name `N`. Imports use this method; that's why we can't re-define module variable from another module, even when this variable was declared using `let`.
 
-  - `[[NewTarget]]` - функция-конструктор. Мы не будем углубляться в эту информацию.
+  And it re-defines the method `GetThisBinding()`. A module is always in the `strict` mode, so `this` is always `undefined`. For this reason, `GetThisBinding()` in Module Environment Record returns `undefined`.
 
-- Module Environment Record - подкласс Declarative Environment Record, использующийся для верхнего лексического окружения модуля.
+- Object Environment Record - used for working with the global object or `with` statement.
 
-  Помимо обычных методов также содержит:
+  It's like abstraction for using some object as a lexical environment. When using this environment record, we always read/change its binding object.
 
-  - `CreateImportBinding(N, M, N2)` - создает иммутабельную непрямую привязку к свойству с именем `N2` из модуля `M`. Для текущего модуля она будет иметь имя `N`. Кстати, по той причине, что она иммутабельна, мы не можем при обращении к `N` переопределять переменную из модуля, если она была обьявлена через `let`.
+  It has the following additional fields:
 
-  И переопределяет метод `GetThisBinding()`. Модуль всегда находится в `strict` режиме, и его `this` равен `undefined`. Поэтому `GetThisBinding()` в лексическом окружении модуля всегда возвращает `undefined`.
+  - `[[BindingObject]]`
+  - `[[IsWithEnvironment]]` - was it created for `with` statement?
 
-- Object Environment Record - используется для прямой связи с определенным объектом.
+  Also, this environment record re-defines some default methods to make it work with the object.
 
-  По сути, обращаясь к данному лексическому окружению, мы работаем со связанным с ним объектом. Поэтому Object Environment Record является своеобразной оберткой над объектом и нужен чтобы представлять его в качестве лексического окружения. Например, такое лексическое окружение создается для работы с глобальным обьектом, или для конструкции `with`.
+- Global Environment Record - used for the top-level lexical environment, created only for the script.
 
-  Имеет следующие дополнительные поля:
+  `[[OuterEnv]]` of this environment record is always `null`.
 
-  - `[[BindingObject]]` - собственно обьект, к которому привязано данное лексическое окружение.
-  - `[[IsWithEnvironment]]` - создано ли оно для конструкции `with`.
+  It doesn't store variables by itself but contains Object Environment Record and Declarative Environment Record inside.
 
-  Также здесь переопределены некоторые методы - для того, чтобы работа происходила напрямую со связанным объектом. Подробное рассмотрение не требуется, достаточно примерно представлять, что происходит.
+  It has the following additional fields:
 
-- Global Environment Record - используется для самого верхнего лексического окружения. Создается только для скрипта.
+  - `[[ObjectRecord]]` - Object Environment Record, bound to the global object. Used for `var` declarations at global (script) level.
+  - `[[DeclarativeRecord]]` - Declarative Environment Record. Used for other declarations.
+  - `[[GlobalThisValue]]` - global `this` value. Usually, it references the global object.
+  - `[[VarNames]]` - list of `var` declarations at global (script) level.
 
-  `[[OuterEnv]]` такого лексического окружения всегда равен `null`.
+  And methods:
 
-  Сам по себе не хранит переменные и значения, но внутри содержит Object Environment Record и Declarative Environment Record.
+  - `GetThisBinding()` - returns global `this`.
+  - `HasVarDeclaration(N)` - check if `[[VarNames]]` has an element `N`.
+  - `HasLexicalDeclaration(N)` - check if `[[DeclarativeRecord]]` has a property named `N`.
+  - `HasRestrictedGlobalProperty(N)` - check if the global object has a property named `N`, restricted for re-defining.
+  - `CanDeclareGlobalVar(N)` - check if it possible to declare a global variable named `N` using `var`.
+  - `CanDeclareGlobalFunction(N)`  - check if it possible to declare a global function named `N` using a function declaration.
+  - `CreateGlobalVarBinding(N, D)` - create a global variable named `N` into `[[ObjectRecord]]` (for `var` declarations).
+  - `CreateGlobalFunctionBinding(N, V, D)` - create a global function named `N` into `[[ObjectRecord]]` (for function declarations).
 
-  Содержит дополнительные поля:
+#### Function's outer lexical environment {#function-outer-lexical-environment-spec}
 
-  - `[[ObjectRecord]]` - Object Environment Record, связанный с глобальным объектом. Сюда записываются `var`, объявленные на уровне скрипта (и function declaration в случае без `strict mode`).
-  - `[[DeclarativeRecord]]` - Declarative Environment Record. Сюда записывается все остальное.
-  - `[[GlobalThisValue]]` - глобальное значение `this`. Обычно указывает на глобальный объект.
-  - `[[VarNames]]` - список имен переменных, обьявленных на уровне скрипта с помощью `var` (и function declaration в случае без `strict mode`).
+[Above](#function-outer-lexical-environment), we talked about the function's outer lexical environment. Let's figure out how it works.
 
-  В том числе методы:
+Each function object has a special hidden property, `[[Environment]]`, used to store a reference to the outer lexical environment.
 
-  - `GetThisBinding()` - возвращает глобальный `this`.
-  - `HasVarDeclaration(N)` - имеет ли `[[VarNames]]` элемент `N`.
-  - `HasLexicalDeclaration(N)` - имеет ли `[[DeclarativeRecord]]` свойство с именем `N`.
-  - `HasRestrictedGlobalProperty(N)` - имеется ли в глобальном обьекте свойство с именем `N`, которое запрещено переопределять.
-  - `CanDeclareGlobalVar(N)` - можно ли создать глобальную переменную `var` с именем `N`.
-  - `CanDeclareGlobalFunction(N)`  - можно ли создать глобальную функцию с именем `N` (с помощью function declaration).
-  - `CreateGlobalVarBinding(N, D)` - создать переменную с именем `N` в `[[ObjectRecord]]` (для `var`).
-  - `CreateGlobalFunctionBinding(N, V, D)` - создать функцию с именем `N` в `[[ObjectRecord]]` (для function declaration).
+When the function is called, the value of `[[Environment]]` is assigned to the newly created lexical environment's `[[OuterEnv]]` field. Therefore, after the new lexical environment, the search continues there.
 
-#### Статус переменных в лексическом окружении
+#### Variable states {#variable-states-spec}
 
-Записи в лексических окружениях могут иметь 2 состояния:
+The bindings in lexical environments can have one of two states:
 
-- не инициализирована
-- инициализирована
+- not initialized
+- initialized
 
-Пока запись не инициализирована - соответствующую переменную нельзя использовать. Это важно знать, чтобы понять как переменные записываются в лексическое окружение и как читаются из него.
+Technically, the variable exists before it is initialized, but usually, we can't use it. We need this information to understand the next chapters.
 
-> В спецификации нет конкретной информации о том как определяется статус инициализации записи. Скорее всего, не инициализированные записи имеют какое-то особое значение, или внутреннее поле (на усмотрение движка).
+> Actually, the specification has no information about how this state is determined and stored. Most likely, not initialized bindings have some special value.
 
-#### Создание переменных
+#### Declaring variables {#declaring-variables-spec}
 
-Перед выполнением блока происходит сканирование кода - для найденных переменных и обьявлений функций, если они подходят по области видимости к текущему лексическому окружению, создаются записи в соответствующем Environment Record. Но, в зависимости от способа объявления, могут происходить или не происходить дополнительные действия.
+Before running the code, the engine scans it for variable and function declarations. For each declaration in the current scope, it creates the binding in the lexical environment. But, depending on the declaration type, there can be some additional actions.
 
-Переменные делятся на 2 группы:
+The variables are divided into two groups:
 
-- `varDeclarations` - `var`, function declaration без `strict mode` (во всем коде функции, кроме вложенных функций).
-- `lexDeclarations` - `let`, `const`, `class`, function declaration со `strict mode` (только в коде, который принадлежит текущему лексическому окружению).
+- `varDeclarations` - `var` (in all function code).
+- `lexDeclarations` - `let`, `const`, `class` (only in code, which belongs to the current lexical environment).
 
-Если сканирование идет для функции, происходит следующее:
+When scanning the function, the engine does the following:
 
-1. Для всех `varDeclarations` в лексическом окружении создаются записи. При этом, помимо создания, **сразу же** происходит **инициализация** записей: для `var` - со значением `undefined`, для function declaration - со значением их function object. Именно поэтому мы можем обращаться к таким переменным еще до того, как выполнение дошло до их обьявления.
-2. Для всех `lexDeclarations` создаются записи, но **не инициализируются**. Из-за этого при обращении к ним до объявления мы получим ошибку `ReferenceError: Cannot access before initialization`. Только когда выполнение дойдет до объявления переменной - она будет инициализирована с соответствующим значением.
+1. Creates bindings for each of `varDeclarations` and **instantly initializes** them: `var` declarations - with `undefined`, and function declarations - with their function object. That's why we can read these variables before they were declared.
+2. Creates bindings for each of `lexDeclarations`, but **doesn't initialize** them. Therefore, when accessing them before the declaration, we get `ReferenceError: Cannot access before initialization`. These bindings are initialized while executing the code.
 
-Если сканирование идет для скрипта - происходит все то же самое, но `varDeclarations` записываются в `[[ObjectRecord]]` глобального лексического окружения, а `lexDeclarations` - в `[[DeclarativeRecord]]`.
+When scanning the script, the engine does the same, but `varDeclarations` are written in `[[ObjectRecord]]` of the global lexical environment, and `lexDeclarations` - in `[[DeclarativeRecord]]`.
 
-При сканировании для любого другого блока выполняется только 2 шаг, так как `varDeclarations` актуальны только для скрипта и функций.
+And when scanning any other block, only the 2nd step is used since `varDeclarations` are present only for functions and the script.
 
-#### Обращение к переменным
+#### Reading variables {#reading-variables-spec}
 
-Здесь все проще.
+It's much more straightforward.
 
-При обращении к переменной выполняется операция [ResolveBinding](https://tc39.es/ecma262/#sec-resolvebinding). Внутри она вызывает [GetIdentifierReference](https://tc39.es/ecma262/#sec-getidentifierreference). Эта функция производит рекурсивный поиск значения по всему дереву, начиная от переданного лексического окружения и заканчивая глобальным лексическим окружением.
+When accessing the variable, the operation [ResolveBinding](https://tc39.es/ecma262/#sec-resolvebinding) is executed. Inside, it uses [GetIdentifierReference](https://tc39.es/ecma262/#sec-getidentifierreference). This function performs the recursive tree search, starting from the lexical environment passed in and ending with the global lexical environment.
 
-> В этой операции нет проверки, была ли переменная инициализирована. Скорее всего данную функциональность движок реализует на свое усмотрение.
+> This operation doesn't check the variable initialization state. Most likely, this functionality is implemented by the engine.
 
-## Контекст выполнения
+## Execution context {#execution-context}
 
-Рассмотрим такой код:
+Consider the following code:
 
 ```js
-/* 1 лексическое окружение */
+/* 1st lexical environment */
+
+A()
 
 function A() {
-  /* 2 лексическое окружение */
+  /* 2nd lexical environment */
   
   const one = 1
   B()
@@ -262,13 +274,13 @@ function A() {
 }
 
 function B() {
-  /* 3 лексическое окружение */
+  /* 3rd lexical environment */
 
   const two = 2
 }
 ```
 
-Дерево лексических окружений здесь выглядит так:
+For the code from above, the tree looks like that:
 
 ```
   1
@@ -276,33 +288,72 @@ function B() {
 2   3
 ```
 
-При выполнении фукции `A` происходит вызов функции `B`, при этом новое лексическое окружение (3), созданное для функции `B` указывает родителем не то лексическое окружение, откуда была вызвана функция (2), а то, где она была создана (1).
+The function `B` is called into the function `A`. And as we learned before, the 1st lexical environment is the outer lexical environment for both 2nd and 3rd, no matter where their functions were called.
 
-Таким образом, когда функция `B` завершает свое выполнение и управление возвращается обратно в функцию `A`, как мы можем определить какое лексическое окружение использовать? По логике, мы должны вернуться назад через ссылку на родительское лексическое окружение, но ведь родитель для 3 лексического окружения - 1 лексическое окружение. Значит, если мы попробуем сделать так - мы будем использовать неправильное лексическое окружение.
+So, when the function `B` execution ends, and the function `A` retakes the control, how can we determine that we should use the 2nd lexical environment now if we have only the branch `1 -> 3`? If we try to use the `B` function's outer lexical environment, it will be the wrong choice.
 
-И вообще, как определяется, какое в текущий момент лексическое окружение активно? И более того, куда записать переменную при создании ее через `var` (или function declaration в случае без `strict mode`)?
+Besides, how we know what lexical environment is active at the current moment? And how can we get the target lexical environment for a `var` variable?
 
-Как раз для этих целей был придуман **контекст выполнения** ([Execution Context](https://tc39.es/ecma262/#sec-execution-contexts)) - он создается для скрипта, модулей и для каждого вызова какой-либо функции и содержит в себе состояние выполнения соответствующего участка кода, а также ссылки на актуальные лексические окружения. Также контекст выполнения создается для вызовов `eval`, но этот случай мы не будем рассматривать.
+We need something for controlling our code execution and operating the lexical environments.
 
-Вместе все контексты выполнения образуют **стек** ([Execution / Call Stack](https://tc39.es/ecma262/#execution-context-stack)), с помощью которого движок может отслеживать выполнение всего кода. При запуске скрипта первым элементом, добавленным в стек, всегда является глобальный контекст окружения, созданный для скрипта. Далее, по мере выполнения кода, в стек могут добавляться контексты выполнения модулей или функций. Последний элемент в стеке - всегда активный контекст выполнения, код которого выполняется в текущий момент.
+Exactly for these purposes, the **Execution Context** was invented.
 
-Таким образом, при вызове функции создается новый контекст выполнения, который становится последним в стеке элементом (и соответственно активным), но старый контекст выполнения никуда не пропадает - он становится предпоследним элементом. После выполнения функции контекст, который был создан для ее вызова, удаляется из стека и активным становится предыдущий элемент. Таким образом управление переходит обратно в предыдущую функцию и код продолжает выполняться.
+Execution Context is a special structure used to store the code execution state and references for the actual lexical environments. It is created for every script, module, function, or `eval` execution.
 
-Теперь о том как устроен контекст выполнения. Он содержит следующие элементы:
+An execution context is only deleted after its associated part of the code finished the execution. So, there can be many execution contexts (but only one of them is active and executing the code).
 
-- Состояние выполнения кода, ассоциированного с данным контекстом.
-- `Function` - функция, код которой выполняется (для скрипта или модуля - `null`).
-- `Realm` - специальный объект, содержащий базовые сущности среды выполнения. Для нас это не очень важно.
-- `ScriptOrModule` - специальный объект скрипта/модуля, если код выполняется для них. Нам это также не нужно.
+Collectively, all the execution contexts are stored as a [LIFO](https://en.wikipedia.org/wiki/Stack_(abstract_data_type)) stack called **Execution Stack** (or Call Stack in other words). For the initial script execution, the first element of the stack is always the global execution context created for the script. Then, as the code runs, the engine can add function/module execution contexts to the end of the stack. The last element of the stack is always the **running** execution context.
 
-И самое интересное:
+Let's look on the code again:
 
-- `LexicalEnvironment` - текущее лексическое окружение контекста выполнения. Изначально здесь находится лексическое окружение, созданное для вызова функции. Но важно то, что это поле не статично - оно может меняться по мере выполнения кода. Например, при заходе в блок `if` будет создано новое лексическое окружение, которое и станет новым `LexicalEnvironment`. После выполнения этого блока кода восстановится предыдущее значение `LexicalEnvironment` (с помощью `[[OuterEnv]]` текущего).
-- `VariableEnvironment` - всегда корневое лексическое окружение контекста выполнения, например, для функций - лексическое окружение функции. Используется при создании переменных через `var` (и function declaration в случае без `strict mode`). Как раз с помощью данного лексического окружения можно однозначно определить куда записывать переменную, не ходя по дереву лексических окружений.
+```js
+/* 1st lexical environment */
 
-При этом `LexicalEnvironment` и `VariableEnvironment` могут указывать на одно и то же лексическое окружение. Например, изначально они оба указывают на лексическое окружение вызова функции.
+A()
 
-Теперь немного грубая пошаговая демонстрация (`VE` = `VariableEnvironment`, `LE` = `LexicalEnvironment`):
+function A() {
+  /* 2nd lexical environment */
+  
+  const one = 1
+  B()
+  return one
+}
+
+function B() {
+  /* 3rd lexical environment */
+
+  const two = 2
+}
+```
+
+1. Initially, the execution stack is empty: `[]`.
+2. When the script is starting to execute, the stack looks like that: `[script]`
+3. When the function `A` is called, it goes to the stack: `[script, A]`
+4. The function `B` is called, but `A` execution is not finished yet. `[script, A, B]`
+5. The `B` execution is finished. We go back to `A`. `[script, A]`
+6. The function `A` returns the results and finishes the execution. We go back to script. `[script]`
+7. There is nothing more to execute. The execution stack becomes empty again: `[]`
+8. The empty stack is not always the end. Promises, timeouts, events - all these can fill the stack and make code execute again. But this is a topic related to the Event Loop.
+
+### Specification {#execution-context-spec}
+
+References:
+- [Execution Context](https://tc39.es/ecma262/#sec-execution-contexts)
+- [Execution / Call Stack](https://tc39.es/ecma262/#execution-context-stack)
+
+An execution context contains the following elements:
+
+- Any state needed to perform, suspend, and resume evaluation of the code associated with this execution context.
+- `Function` - the function object, which code is executed (`null` for script/module).
+- `ScriptOrModule` - an object of script/module, which code is executed (`null` for functions).
+- `Realm` - a special object, containing the base runtime's things.
+
+And the most important:
+
+- `VariableEnvironment` - it's constant and points to the root lexical environment for the code associated with this execution context. The `var` declarations are always written here.
+- `LexicalEnvironment` - the current lexical enviroment. Initially, it's the root lexical environment (as in `VariableEnvironment`), but it can change as the code runs. The newly created lexical environments' `[[OuterEnv]]` always points to the previous `LexicalEnvironment` value, so execution context can restore it back after leaving the nested block.
+
+And now a little rough demo (`VE` = `VariableEnvironment`, `LE` = `LexicalEnvironment`):
 
 ```js
 ///////
@@ -310,7 +361,7 @@ function B() {
 ///////
 
 /*
- * Стек: [
+ * Execution stack: [
  *   script: { VE: 1, LE: 1 }
  * ]
  */
@@ -323,7 +374,7 @@ function A() {
   ///////
   
   /*
-   * Стек: [
+   * Execution stack: [
    *   script: { VE: 1, LE: 1 },
    *   A: { VE: 2, LE: 2 }
    * ]
@@ -335,20 +386,20 @@ function A() {
     ///////
     
     /*
-     * Стек: [
+     * Execution stack: [
      *   script: { VE: 1, LE: 1 },
      *   A: { VE: 2, LE: 3 }
      * ]
      */
     
-    const foo = 2 // записывается в LE
-    var zoo = 3 // записывается в VE
+    const foo = 2 // goes in LE
+    var zoo = 3 // goes in VE
     
     B()
   }
   
   /*
-   * Стек: [
+   * Execution stack: [
    *   script: { VE: 1, LE: 1 },
    *   A: { VE: 2, LE: 2 }
    * ]
@@ -363,7 +414,7 @@ function B() {
 	///////
   
   /*
-   * Стек: [
+   * Execution stack: [
    *   script: { VE: 1, LE: 1 },
    *   A: { VE: 2, LE: 3 },
    *   B: { VE: 4, LE: 4 }
@@ -381,7 +432,7 @@ function C() {
   ///////
   
   /*
-   * Стек: [
+   * Execution stack: [
    *   script: { VE: 1, LE: 1 },
    *   A: { VE: 2, LE: 3 },
    *   B: { VE: 4, LE: 4 },
@@ -397,7 +448,7 @@ function C() {
     ///////
     
     /*
-     * Стек: [
+     * Execution stack: [
      *   script: { VE: 1, LE: 1 },
      *   A: { VE: 2, LE: 3 },
      *   B: { VE: 4, LE: 4 },
@@ -417,7 +468,7 @@ function D() {
   ///////
   
   /*
-   * Стек: [
+   * Execution stack: [
    *   script: { VE: 1, LE: 1 },
    *   A: { VE: 2, LE: 2 },
    *   D: { VE: 7, LE: 7 },

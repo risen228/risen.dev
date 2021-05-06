@@ -114,6 +114,25 @@ a.anchor svg {
     padding-left: 1rem;
     margin-left: 0;
   }
+
+  ul, ol {
+    padding-left: 1rem;
+  }
+
+  ul ul,
+  ol ol {
+    padding-left: 0;
+  }
+
+  blockquote {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  ul, ol {
+    margin-left: 0;
+  }
 }
 
 @media (max-width: 1024px) {

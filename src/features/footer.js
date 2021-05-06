@@ -12,7 +12,7 @@ export const Footer = () => {
 
   return (
     <footer style={{ marginTop: rhythm(3) }}>
-      © {year}, Создано с помощью <GatsbyLink />
+      © {year}, Created using <GatsbyLink />
     </footer>
   )
 }

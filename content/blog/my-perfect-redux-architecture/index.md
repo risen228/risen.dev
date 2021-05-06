@@ -1,42 +1,39 @@
 ---
-title: Моя идеальная архитектура Redux
+title: My perfect Redux architecture
 date: "2020-01-30T00:37:42.751Z"
-description: "Дьявол никогда не выглядел так хорошо."
+description: "The devil never looked so good."
 ---
 
-Я часто вижу, как начинающие и даже опытные редаксеры допускают ошибки в архитектуре, обрекая приложение на неизбежное погружение в пучину горя, боли и разрушения. 
+I've seen many times how people make common architectural mistakes using Redux. And even experienced people do it sometimes. These mistakes push the application into a pit of despair, pain, and destruction.
 
-К тому, что перечислено в этом посте, я пришел за несколько лет использования Redux, и надеюсь эти практики помогут вам разорвать порочный круг насилия.
+The things I wrote in this post are the result of my long experience with Redux. So I hope these practices help you break the vicious circle of violence.
 
-## Итак, в чем же суть? {#and-whats-the-point}
+## So, what's the point? {#so-whats-the-point}
 
-Будем рассматривать все на примере самого обычного "голого" редакса, без `@reduxjs/toolkit` и подобных штук.  
-Ничто не помешает вам адаптировать этот подход и под другие инструменты.
+I will use "pure" Redux since it's easier to understand for everyone. There are many things like `@reduxjs/toolkit`, but nothing prevents you from adapting this architecture for them.
 
-Основная единица архитектуры - это **модуль**. Они могут быть глобальными и локальными.
+**Module** is the primary unit in this architecture. It can be global or local.
 
-Глобальные находятся рядом со стором, так как они не закреплены за определенной фичей.  
-Данные о юзере и авторизации, состояние общих для приложения модалок и все такое - это глобальные модули.
+The global ones are located near the store since they cannot be bound to a specific feature. The information about the current user, authentification, global application modals, and anything like these are the global modules.
 
-Локальные модули всегда закреплены за определенной фичей и находятся внутри ее.  
-К локальным модулям можно отнести список пользователей, заметки, задачи.
+The local modules are always located inside some feature. It can be a data slice for user profiles, notes, or tasks, for example.
 
-Модуль имеет следующую структуру:
+Each module has the following structure:
 
 ```tree
 counter
- ┣ actions.js
- ┣ index.js
+ ┣ types.js
  ┣ reducer.js
+ ┣ actions.js
  ┣ selectors.js
- ┗ types.js
+ ┗ index.js
 ```
 
-По очереди:
+By the order:
 
 - `types.js`
 
-Здесь в виде констант находятся типы экшнов.
+This is the action types.
 
 ```js
 export const INCREASE = 'counter/INCREASE'
@@ -47,7 +44,7 @@ export const RESET = 'counter/RESET'
 
 - `reducer.js`
 
-Не трудно догадаться, что тут обитает редьюсер.
+I think you already know what that is for.
 
 ```js
 import * as types from './types'
@@ -78,7 +75,7 @@ export function reducer(state = initialState, action) {
 
 - `actions.js`
 
-Здесь живут наши экшны (если точнее, action creators).
+Here we keep all of our action creators and thunks.
 
 ```js
 import * as types from './types.js'
@@ -96,7 +93,7 @@ export const reset = () => ({ type: types.RESET })
 
 - `selectors.js`
 
-Селекторы, которым, кстати, посвящена отдельная [статья](/posts/cooking-selectors).
+Selectors. You can discover more about them [here](/posts/cooking-selectors).
 
 ```js
 export const everything = state => state.counter
@@ -106,12 +103,13 @@ export const count = state => everything(state)
 
 - `index.js`
 
-Здесь начинается самое интересное.  
-В этом файле модуль объявляет свое внешнее api.
+It is the most exciting part.
+In this place, we define the public API for our module.
 
-Данная архитектура интересна тем, что селекторы и экшны "упаковываются" в объекты, и в таком виде их становится очень удобно использовать снаружи.  
-Благодаря этому мы не засоряем файлы кучей импортов, а просто импортируем группы селекторов/экшнов определенного модуля.  
-Также это позволяет давать селекторам понятные имена и избегать конфликтов с другими модулями, а экшны передавать внутрь компонента сразу группой, без перечисления.
+We "pack" actions and selectors into the objects, which are much more convenient for using outside:
+1. We write only one import line for each module.
+2. It prevents any conflicts between modules' action/selector names.
+3. We can pass the group of actions into a component just by one line of code.
 
 ```js
 import { reducer } from './reducer'
@@ -125,21 +123,23 @@ export {
 }
 ```
 
-**Важная заметка:**  
-Иногда в экшнах нужно использовать селекторы из этого же модуля.  
-В таком случае их нужно импортировать как и типы экшнов, через `import * as selectors`.  
-Иначе высок риск столкнуться с циклической зависимостью.
+**An important note:**
+Sometimes, we need to use the same module's selectors in actions.
+In this case, import them just like actions types, using `import * as selectors`.
+Otherwise, there is a significant risk of getting a circular dependency.
 
-## Вид снаружи {#outside-view}
+## The view from outside {#the-view-from-outside}
 
-Теперь нам нужно подключить модуль к компоненту.
+Let's connect a module to the component.
 
-Раньше для этого всегда использовались `mapStateToProps` и `mapDispatchToProps`, но теперь, с появлением хуков, все делается намного проще и элегантнее. Но помимо базовых `useSelector` и `useDispatch` нам понадобится магический хук `useActions`. Магическим он является потому, что позволяет невероятно легко получить за`bind`женные экшны в компоненте, избавляя нас от необходимости оборачивать их в `dispatch` руками.
+In good ol' times, we used `connect` for these purposes. But now, after React team introduced hooks, this task has become a lot easier.
 
-`useActions` был удален из `react-redux`, так как великий Дэн Абрамов [был против такого подхода](https://github.com/reduxjs/react-redux/issues/1252#issuecomment-488160930).  
-Но к счастью, слова Дэна нас не касаются, так как мы будем использовать этот хук разумно.
+Before we start, let's write a nice magic hook, `useActions`, that will get bound actions for us. I call it magic because, in one line, it allows us to do such a big boilerplate job and hide `dispatch` inside.
 
-Вот так он выглядит:
+`useActions` was removed from `react-redux` since mighty [Dan Abramov was against this practice](https://github.com/reduxjs/react-redux/issues/1252#issuecomment-488160930).  
+But it's not our problem; we use this hook for a reason.
+
+That's how it looks:
 
 ```js
 import { useDispatch } from 'react-redux'
@@ -151,13 +151,13 @@ export function useActions(actions) {
 
   const boundActions = useMemo(() => {
     return bindActionCreators(actions, dispatch)
-  }, [])
+  }, [actions, dispatch])
 
   return boundActions
 }
 ```
 
-А теперь используем все это в компоненте:
+Let's try it in the component:
 
 ```jsx
 export const Counter = () => {
@@ -177,29 +177,18 @@ export const Counter = () => {
 }
 ```
 
-Единственная проблема возникает тогда, когда нам нужны экшны с одинаковыми именами из разных модулей.  
-Ситуация редкая, но случиться может.  
-Чаще всего будет достаточно просто положить значение в другую переменную при деструктуризации:
+The only problem you can run into is when you need to get two actions with the same name from the different modules.  
+It's a rare situation, but it's real.  
+Most often, it will be enough to rename the action through destructuring assignment:
 
 ```js
 const { reset: resetUsers } = useActions(usersActions)
 const { reset: resetBlacklist } = useActions(blacklistActions)
 ```
 
-## Пример структуры приложения {#folder-structure-example}
+## Folder structure example {#folder-structure-example}
 
-Сделано по мотивам [feature slices](https://teleg.run/feature_slices).
-
-`features` - наборы функциональности, призванные решать конкретные бизнес-сценарии, в нашем случае это управление пользователями и файлами.
-
-`ui` - чистые реюзабельные компоненты, являющиеся UI-библиотекой данного проекта.
-`ui/templates` - шаблоны страниц проекта. В данном случае есть один общий шаблон, использующийся всеми страницами. Если понадобится придать странице индивидуальности, можно создать отдельный шаблон.
-
-`pages` - структура, содержащая иерархию страниц в проекте, может иметь вложенность. `index.js` каждой страницы содержит компонент, который рендерит фичу или набор фич, обернутые в `template`. Также там происходит инициализация данных, которые нужны конкретной странице, и выполняется логика, принадлежащая к странице в целом.
-
-`lib` - общая логика, которую нельзя отнести к какой-то конкретной фиче (да, фичи могут иметь свою `lib` внутри). Все содержимое стоит группировать по папкам, название которых отображает предназначение. Папки наподобие `helpers` или `util` - плохая идея, так как они быстро превращаются в мусорку.
-
-Так или иначе, даже в пределах feature slices могут быть индивидуальные для проекта архитектурные решения. То есть в некоторых случаях можно отходить от описанного выше (допустим, иногда фичи могут содержать шаблоны).
+Based on [feature slices](https://featureslices.dev/).
 
 ```tree
 src
@@ -256,8 +245,8 @@ src
  ┗ index.js
 ```
 
-## Небольшие итоги {#conclusion}
+## Conclusion {#conclusion}
 
-Как мы видим, даже такой монстр как редакс может быть вполне юзабелен.
+As you see, even Redux can become clean if you do some tweaks.
 
-Тем не менее, рекомендую ознакомиться с более современными и удобными стейт-менеджерами, такими как [Effector](https://effector.now.sh/) и [Reatom](https://reatom.js.org/).
+However, I recommend you to check more modern and convenient state-managers, for example, [Effector](https://effector.dev/) and [Reatom](https://reatom.js.org/).

@@ -1,9 +1,11 @@
+const { defaultLangKey } = require('./i18n')
+
 module.exports = {
   siteMetadata: {
     title: 'Risen.dev',
     author: 'risenforces',
     description:
-      'Очередной блог о веб-разработке. Стараюсь сделать ваш код лучше.',
+      'Just an ordinary web-development blog. Trying to make your code better.',
     siteUrl: 'https://risen.dev',
     social: {
       github: 'risenforces',
@@ -117,6 +119,14 @@ module.exports = {
       resolve: 'gatsby-plugin-disqus',
       options: {
         shortname: 'risen-dev',
+      },
+    },
+    {
+      resolve: 'gatsby-plugin-i18n',
+      options: {
+        langKeyDefault: defaultLangKey,
+        useLangKeyLayout: false,
+        pagesPaths: [`${__dirname}/content/blog`],
       },
     },
   ],

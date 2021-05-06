@@ -1,4 +1,4 @@
-const monthMap = {
+const monthMapRu = {
   0: 'января',
   1: 'февраля',
   2: 'марта',
@@ -13,14 +13,46 @@ const monthMap = {
   11: 'декабря',
 }
 
-export const fullDate = date => {
-  const d = new Date(date)
+const monthMapEn = {
+  0: 'January',
+  1: 'February',
+  2: 'March',
+  3: 'April',
+  4: 'May',
+  5: 'June',
+  6: 'July',
+  7: 'August',
+  8: 'September',
+  9: 'October',
+  10: 'November',
+  11: 'December',
+}
 
-  const day = d.getDate()
-  const month = d.getMonth()
-  const year = d.getFullYear()
+const formatters = {
+  ru: date => {
+    const d = new Date(date)
 
-  const monthLong = monthMap[month]
+    const day = d.getDate()
+    const month = d.getMonth()
+    const year = d.getFullYear()
 
-  return `${day} ${monthLong} ${year} г.`
+    const monthLong = monthMapRu[month]
+
+    return `${day} ${monthLong} ${year} г.`
+  },
+  en: date => {
+    const d = new Date(date)
+
+    const day = d.getDate()
+    const month = d.getMonth()
+    const year = d.getFullYear()
+
+    const monthLong = monthMapEn[month]
+
+    return `${day} ${monthLong} ${year}`
+  },
+}
+
+export const fullDate = (date, langKey) => {
+  return formatters[langKey](date)
 }

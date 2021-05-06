@@ -1,14 +1,16 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Link, graphql } from 'gatsby'
-import { Disqus } from 'gatsby-plugin-disqus'
 import { rhythm, scale } from '../utils/typography'
 import { fullDate } from '../utils/dates'
 import { toPostUrl } from '../utils/post-url'
 import { PostTemplate } from '../templates'
-import { Seo } from './seo'
-import { Bio } from './bio'
+import { normalizeSlug } from '../utils/slug'
+import { useThemeStore } from '../stores/theme'
+import { Seo } from '../features/seo'
+import { Bio } from '../features/bio'
+import { defaultLangKey, mapLangKeyToName } from '../../i18n'
 
-const Header = ({ postTitle, date }) => {
+const Header = ({ postTitle, date, langKey }) => {
   return (
     <header>
       <h1
@@ -26,7 +28,7 @@ const Header = ({ postTitle, date }) => {
           marginBottom: rhythm(1),
         }}
       >
-        {fullDate(date)}
+        {fullDate(date, langKey)}
       </p>
     </header>
   )
@@ -65,7 +67,7 @@ const Navigation = ({ next, previous }) => {
           >
             <Link
               className="link-hover __right"
-              to={toPostUrl(previous.fields.slug)}
+              to={toPostUrl(previous.fields.slug, previous.fields.langKey)}
               rel="prev"
             >
               ← {previous.frontmatter.title}
@@ -83,7 +85,7 @@ const Navigation = ({ next, previous }) => {
           >
             <Link
               className="link-hover __left"
-              to={toPostUrl(next.fields.slug)}
+              to={toPostUrl(next.fields.slug, next.fields.langKey)}
               rel="next"
             >
               {next.frontmatter.title} →
@@ -95,13 +97,33 @@ const Navigation = ({ next, previous }) => {
   )
 }
 
-const WrappedDisqus = ({ config }) => {
-  if (process.env.GATSBY_DISABLE_DISQUS === 'true') return null
+const Comments = ({ slug }) => {
+  const [theme] = useThemeStore()
 
-  return <Disqus config={config} />
+  const commentBox = useRef()
+
+  useEffect(() => {
+    if (!commentBox.current) return
+
+    const container = commentBox.current
+    container.innerHTML = ''
+
+    const script = document.createElement('script')
+    script.async = true
+    script.src = 'https://utteranc.es/client.js'
+    script.setAttribute('repo', 'risenforces/risen.dev-comments')
+    script.setAttribute('issue-term', slug)
+    script.setAttribute('id', 'utterances')
+    script.setAttribute('theme', `github-${theme}`)
+    script.setAttribute('crossorigin', 'anonymous')
+
+    container.appendChild(script)
+  }, [slug, theme])
+
+  return <div ref={commentBox} />
 }
 
-const Footer = ({ siteTitle, next, previous, disqusConfig }) => {
+const Footer = ({ siteTitle, next, previous, slug, langKey }) => {
   return (
     <footer style={{ marginTop: rhythm(3), marginBottom: rhythm(3) }}>
       <Navigation next={next} previous={previous} />
@@ -129,43 +151,100 @@ const Footer = ({ siteTitle, next, previous, disqusConfig }) => {
         <Bio />
       </div>
 
-      <WrappedDisqus config={disqusConfig} />
+      <Comments slug={slug} langKey={langKey} />
     </footer>
   )
 }
 
-const BlogPost = ({ data, location, pageContext }) => {
+const TranslationsBlock = ({ children }) => (
+  <div
+    style={{
+      fontSize: 14,
+      padding: '1rem',
+      borderRadius: 10,
+      color: 'var(--translations-color)',
+      backgroundColor: 'var(--translations-bg)',
+      marginBottom: '2rem',
+    }}
+  >
+    {children}
+  </div>
+)
+
+const Translations = ({ slug, langKey, translations }) => {
+  if (langKey !== defaultLangKey) {
+    if (!translations.includes(defaultLangKey)) {
+      return null
+    }
+
+    return (
+      <TranslationsBlock>
+        <a
+          href={`/posts${slug}`}
+          style={{ color: 'var(--translations-link-color)' }}
+        >
+          Read in original ({mapLangKeyToName[defaultLangKey]})
+        </a>
+      </TranslationsBlock>
+    )
+  }
+
+  const links = translations
+    .filter(lang => lang !== defaultLangKey)
+    .map((lang, index, otherLangs) => {
+      return (
+        <React.Fragment key={lang}>
+          <a
+            href={`/${lang}/posts${slug}`}
+            style={{ color: 'var(--translations-link-color)' }}
+          >
+            {mapLangKeyToName[lang]}
+          </a>
+          {index < otherLangs.length - 1 ? ', ' : ''}
+        </React.Fragment>
+      )
+    })
+
+  return <TranslationsBlock>Translated in: {links}</TranslationsBlock>
+}
+
+const BlogPost = ({ data, pageContext }) => {
   const {
     site: {
-      siteMetadata: { title: siteTitle, siteUrl },
+      siteMetadata: { title: siteTitle },
     },
     markdownRemark: {
-      id,
       excerpt,
       html: postHtml,
+      fields: { slug, langKey },
       frontmatter: { title: postTitle, date, description },
     },
   } = data
 
-  const { previous, next } = pageContext
-
-  const disqusConfig = {
-    url: siteUrl + location.pathname,
-    identifier: id,
-    title: postTitle,
-  }
+  const normalizedSlug = normalizeSlug(slug)
+  const { previous, next, translations } = pageContext
 
   return (
     <PostTemplate title={siteTitle}>
-      <Seo title={postTitle} description={description || excerpt} />
+      <Seo
+        title={postTitle}
+        lang={langKey}
+        description={description || excerpt}
+      />
       <article>
-        <Header postTitle={postTitle} date={date} />
+        <Header postTitle={postTitle} date={date} langKey={langKey} />
+        <Translations
+          slug={normalizedSlug}
+          langKey={langKey}
+          translations={translations}
+        />
         <PostText postHtml={postHtml} />
         <Footer
           siteTitle={siteTitle}
           next={next}
           previous={previous}
-          disqusConfig={disqusConfig}
+          slug={normalizedSlug}
+          langKey={langKey}
         />
       </article>
     </PostTemplate>
@@ -184,6 +263,10 @@ export const pageQuery = graphql`
       id
       excerpt(pruneLength: 160)
       html
+      fields {
+        slug
+        langKey
+      }
       frontmatter {
         title
         date
