@@ -13,7 +13,7 @@ description: "Самый обычный перевод спецификации"
   - [Объявление/запись переменных](#declaring-and-writing-variables)
   - [Спецификация](#lexical-environments-spec)
       - [Виды Environment Record](#environment-record-types)
-      - [Родительское лексическое окружение функций](#function-outer-lexical-environment-spec)
+      - [Внешние лексические окружения функций](#function-outer-lexical-environment-spec)
       - [Статус переменных](#variable-states-spec)
       - [Создание переменных](#declaring-variables-spec)
       - [Чтение переменных](#reading-variables-spec)
@@ -219,7 +219,7 @@ function B() {
   - `CreateGlobalVarBinding(N, D)` - создать переменную с именем `N` в `[[ObjectRecord]]` (для `var`).
   - `CreateGlobalFunctionBinding(N, V, D)` - создать функцию с именем `N` в `[[ObjectRecord]]` (для function declaration).
 
-#### Родительское лексическое окружение функций {#function-outer-lexical-environment-spec}
+#### Внешние лексические окружения функций {#function-outer-lexical-environment-spec}
 
 [Выше](#function-outer-lexical-environment) мы говорили про родительское окружение функций. Давайте подробнее разберемся как это работает.
 
