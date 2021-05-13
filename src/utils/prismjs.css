@@ -56,14 +56,12 @@ code.language-text {
   padding: 0.1em 0.5em !important;
 }
 
-pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
-code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection {
   text-shadow: none;
   background: rgba(255, 255, 255, 0.1);
 }
 
-pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
-code[class*="language-"]::selection, code[class*="language-"] ::selection {
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection {
   text-shadow: none;
   background: rgba(255, 255, 255, 0.1);
 }
