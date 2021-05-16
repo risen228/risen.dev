@@ -20,8 +20,12 @@ function useSystemTheme() {
       setSystemTheme(newColorTheme)
     }
 
-    media.addEventListener('change', listener)
-    return () => media.removeEventListener('change', listener)
+    const addEventListener =
+      media.addEventListener || media.addListener || function() {}
+    const removeEventListener =
+      media.removeEventListener || media.removeListener || function() {}
+    addEventListener('change', listener)
+    return () => removeEventListener('change', listener)
   }, [])
 
   return systemTheme
