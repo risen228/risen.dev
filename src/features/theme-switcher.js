@@ -24,8 +24,8 @@ function useSystemTheme() {
       media.addEventListener || media.addListener || function() {}
     const removeEventListener =
       media.removeEventListener || media.removeListener || function() {}
-    addEventListener('change', listener)
-    return () => removeEventListener('change', listener)
+    addEventListener.call(media, 'change', listener)
+    return () => removeEventListener.call(media, 'change', listener)
   }, [])
 
   return systemTheme
