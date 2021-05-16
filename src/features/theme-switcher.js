@@ -15,17 +15,29 @@ function useSystemTheme() {
   useEffect(() => {
     const media = window.matchMedia('(prefers-color-scheme: dark)')
 
+    const subscribe = callback => {
+      if (media.addEventListener) {
+        media.addEventListener('change', callback)
+      } else if (media.addListener) {
+        media.addListener(callback)
+      }
+    }
+
+    const unsubscribe = callback => {
+      if (media.removeEventListener) {
+        media.removeEventListener('change', callback)
+      } else if (media.removeListener) {
+        media.removeListener(callback)
+      }
+    }
+
     const listener = event => {
       const newColorTheme = event.matches ? 'dark' : 'light'
       setSystemTheme(newColorTheme)
     }
 
-    const addEventListener =
-      media.addEventListener || media.addListener || function() {}
-    const removeEventListener =
-      media.removeEventListener || media.removeListener || function() {}
-    addEventListener.call(media, 'change', listener)
-    return () => removeEventListener.call(media, 'change', listener)
+    subscribe(listener)
+    return () => unsubscribe(listener)
   }, [])
 
   return systemTheme
