@@ -1,5 +1,5 @@
 :root.light-theme {
-  --c-text-primary: hsl(0deg 0% 0% / 80%);
+  --c-text-primary: rgba(0, 0, 0, 0.8);
 	--c-text-secondary: #737374;
 	--c-border-primary: #ccc;
 	--c-bg-primary: #fff;
@@ -9,16 +9,16 @@
   --text-link-color: #9040bb;
   --inline-code-bg: rgba(255, 229, 100, 0.2);
   --inline-code-color: #1a1a1a;
-  --quote-color: hsla(0, 0%, 0%, 0.5);
-  --quote-border: hsla(0, 0%, 0%, 0.75);
+  --quote-color: rgba(0, 0, 0, 0.5);
+  --quote-border: rgba(0, 0, 0, 0.75);
   --code-bg: #011627;
   --translations-bg: #011627;
-  --translations-color: hsl(0deg 0% 100% / 65%);
+  --translations-color: rgba(255, 255, 255, 0.65);
   --translations-link-color: #b989d2;
 }
 
 :root.dark-theme {
-  --c-text-primary: hsl(0deg 0% 100% / 65%);
+  --c-text-primary: rgba(255, 255, 255, 0.65);
 	--c-text-secondary: #d3d5db;
 	--c-border-primary: #454545;
 	--c-bg-primary: #000;
@@ -26,13 +26,13 @@
 	--c-bg-button: #494a50;
 	--slider-shadow: inset 0 1px 1px #767676;
   --text-link-color: #976aaf;
-  --inline-code-bg: hsl(0deg 0% 100% / 20%);
+  --inline-code-bg: rgba(255, 255, 255, 0.2);
   --inline-code-color: var(--c-text-primary);
-  --quote-color: hsl(0deg 0% 100% / 50%);
-  --quote-border: hsl(0deg 0% 100% / 75%);
+  --quote-color: rgba(255, 255, 255, 0.5);
+  --quote-border: rgba(255, 255, 255, 0.75);
   --code-bg: #131313;
   --translations-bg: #131313;
-  --translations-color: hsl(0deg 0% 100% / 65%);
+  --translations-color: rgba(255, 255, 255, 0.65);
   --translations-link-color: #a173b9;
 }
 
