@@ -36,5 +36,11 @@
       "destination": "https://risen.notion.site/Evgeny-Zakharov-d06d1c609ce8480a834f6349e19bf0df",
       "permanent": true
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/cv-test",
+      "destination": "https://risen.notion.site/Evgeny-Zakharov-d06d1c609ce8480a834f6349e19bf0df"
+    }
   ]
 }
