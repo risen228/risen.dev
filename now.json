@@ -28,7 +28,7 @@
       ]
     },
     {
-      "source": "/(.*\\.(js|json|css|ico|png)$)",
+      "source": "/(.*).(js|json|css|ico|png)",
       "headers": [
         {
           "key": "Cache-Control",
