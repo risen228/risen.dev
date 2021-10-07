@@ -55,7 +55,7 @@
   ],
   "rewrites": [
     {
-      "source": "/cv-test",
+      "source": "/123",
       "destination": "https://risen.notion.site/Evgeny-Zakharov-d06d1c609ce8480a834f6349e19bf0df"
     }
   ]
