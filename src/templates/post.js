@@ -4,6 +4,7 @@ import { Link } from 'gatsby'
 import { rhythm } from '../utils/typography'
 import { Footer } from '../features/footer'
 import { Header } from '../features/header'
+// import { SubscribeForm } from '../features/subscribe-form'
 
 export const Post = ({ title, children }) => {
   return (
@@ -39,6 +40,8 @@ export const Post = ({ title, children }) => {
       />
 
       <main>{children}</main>
+
+      {/* <SubscribeForm /> */}
 
       <Footer />
     </div>
