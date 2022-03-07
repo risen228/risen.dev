@@ -76,7 +76,7 @@ Every lexical environment has a link to its "parent". Thereby, collectively, all
 For the code from above, the tree looks like the following:
 
 ```
-  1
+ 1
    \
     2
    / \
@@ -283,7 +283,7 @@ function B() {
 For the code from above, the tree looks like that:
 
 ```
-  1
+ 1
  / \
 2   3
 ```
