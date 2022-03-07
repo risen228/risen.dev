@@ -97,6 +97,31 @@ a.anchor svg {
   stroke: var(--text-link-color);
 }
 
+.gatsby-code-button-container {
+  height: 0;
+}
+
+.gatsby-code-button {
+  margin-top: -16px;
+  margin-right: -8px;
+}
+
+.gatsby-code-button > svg > path {
+  fill: rgba(255, 255, 255, 0.65);
+}
+
+.gatsby-code-button > svg:hover > path {
+  fill: rgba(255, 255, 255, 1);
+}
+
+.gatsby-code-button > svg:active > path {
+  fill: rgba(255, 255, 255, 0.65);
+}
+
+.gatsby-code-button:after {
+  display: none !important;
+}
+
 @media (max-width: 568px) {
   .app-header {
     flex-direction: column-reverse;
