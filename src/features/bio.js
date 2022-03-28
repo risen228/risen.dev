@@ -33,6 +33,7 @@ const Description = ({ lines, social }) => {
       })}
       <div>
         <SocialLink name="GitHub" url={`https://github.com/${social.github}`} />
+        <SocialLink name="Telegram" url={`https://t.me/${social.telegram}`} />
         <SocialLink name="VK" url={`https://vk.com/${social.vk}`} />
       </div>
     </div>
@@ -47,6 +48,7 @@ export const Bio = () => {
           author
           social {
             github
+            telegram
             vk
           }
         }
@@ -83,7 +85,7 @@ export const Bio = () => {
       <Description
         lines={[
           'Just an ordinary web-development blog.',
-          'Trying to make your code better.',
+          'Trying to improve your code.',
         ]}
         social={social}
       />

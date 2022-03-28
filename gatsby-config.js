@@ -9,6 +9,7 @@ module.exports = {
     siteUrl: 'https://risen.dev',
     social: {
       github: 'risenforces',
+      telegram: 'risenforces',
       vk: 'risenforces',
     },
   },
