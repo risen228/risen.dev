@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'gatsby'
 
+import { Analytics } from '@vercel/analytics/dist/react'
 import { rhythm } from '../utils/typography'
 import { Footer } from '../features/footer'
 import { Header } from '../features/header'
@@ -44,6 +45,8 @@ export const Post = ({ title, children }) => {
       {/* <SubscribeForm /> */}
 
       <Footer />
+
+      <Analytics />
     </div>
   )
 }
