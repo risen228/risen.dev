@@ -1,13 +1,6 @@
 {
   "version": 2,
   "alias": "risen.dev",
-  "builds": [
-    {
-      "use": "@now/static-build",
-      "src": "package.json",
-      "config": { "distDir": "public" }
-    }
-  ],
   "headers": [
     {
       "source": "/static/(.*)",
