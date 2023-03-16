@@ -133,5 +133,8 @@ module.exports = {
         pagesPaths: [`${__dirname}/content/blog`],
       },
     },
+    {
+      resolve: 'gatsby-plugin-vercel',
+    },
   ],
 }
