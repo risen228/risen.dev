@@ -1,6 +1,8 @@
 import React from 'react'
 import { Link } from 'gatsby'
 
+import { Analytics } from '@vercel/analytics/dist/react'
+
 import { rhythm, scale } from '../utils/typography'
 import { Footer } from '../features/footer'
 import { Header } from '../features/header'
@@ -44,6 +46,8 @@ export const Main = ({ title, children }) => {
       {/* <SubscribeForm /> */}
 
       <Footer />
+
+      <Analytics />
     </div>
   )
 }

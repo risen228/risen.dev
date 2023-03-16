@@ -8,6 +8,7 @@
     "url": "https://github.com/risenforces/risen.dev/issues"
   },
   "dependencies": {
+    "@vercel/analytics": "^0.1.11",
     "clsx": "^1.1.1",
     "gatsby": "^2.32.13",
     "gatsby-image": "^2.2.39",
