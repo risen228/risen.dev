@@ -3,14 +3,14 @@ const { defaultLangKey } = require('./i18n')
 module.exports = {
   siteMetadata: {
     title: 'Risen.dev',
-    author: 'risenforces',
+    author: 'risen228',
     description:
       'Just an ordinary web-development blog. Trying to make your code better.',
     siteUrl: 'https://risen.dev',
     social: {
-      github: 'risenforces',
-      telegram: 'risenforces',
-      vk: 'risenforces',
+      github: 'risen228',
+      telegram: 'risen228',
+      vk: 'risen228',
     },
   },
   plugins: [
