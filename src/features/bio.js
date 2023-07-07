@@ -32,6 +32,7 @@ const Description = ({ lines, social }) => {
         )
       })}
       <div>
+        <SocialLink name="LinkedIn" url={`https://www.linkedin.com/in/${social.linkedIn}`} />
         <SocialLink name="GitHub" url={`https://github.com/${social.github}`} />
         <SocialLink name="Telegram" url={`https://t.me/${social.telegram}`} />
         <SocialLink name="VK" url={`https://vk.com/${social.vk}`} />
