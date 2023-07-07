@@ -11,6 +11,7 @@ module.exports = {
       github: 'risen228',
       telegram: 'risen228',
       vk: 'risen228',
+      linkedIn: 'risen228'
     },
   },
   plugins: [
