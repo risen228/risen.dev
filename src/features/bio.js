@@ -7,7 +7,7 @@
 
 import React from 'react'
 import { useStaticQuery, graphql } from 'gatsby'
-import avatar from '../assets/avatar.png'
+import avatar from '../assets/avatar.jpg'
 import { rhythm } from '../utils/typography'
 
 const SocialLink = ({ name, url }) => (
@@ -32,7 +32,10 @@ const Description = ({ lines, social }) => {
         )
       })}
       <div>
-        <SocialLink name="LinkedIn" url={`https://www.linkedin.com/in/${social.linkedIn}`} />
+        <SocialLink
+          name="LinkedIn"
+          url={`https://www.linkedin.com/in/${social.linkedIn}`}
+        />
         <SocialLink name="GitHub" url={`https://github.com/${social.github}`} />
         <SocialLink name="Telegram" url={`https://t.me/${social.telegram}`} />
         <SocialLink name="VK" url={`https://vk.com/${social.vk}`} />
@@ -51,6 +54,7 @@ export const Bio = () => {
             github
             telegram
             vk
+            linkedIn
           }
         }
       }
@@ -78,8 +82,8 @@ export const Bio = () => {
         style={{
           marginRight: rhythm(0.5),
           marginBottom: 0,
-          width: rhythm(2),
-          height: rhythm(2),
+          width: 64,
+          height: 64,
           borderRadius: '50%',
         }}
       />
