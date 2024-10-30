@@ -77,8 +77,8 @@ export const Bio = () => {
       }}
     >
       <img
-        src={avatar}
-        alt={author}
+        src="https://avatars.githubusercontent.com/u/35740512?v=4"
+        alt="Risen Github Photo"
         style={{
           marginRight: rhythm(0.5),
           marginBottom: 0,
